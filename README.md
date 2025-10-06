@@ -21,7 +21,7 @@ Ruby implementation of [JsonLogic](https://jsonlogic.com/) — simple and extens
   - [Miscellaneous](#miscellaneous)
 - [Extending (add your own operator)](#extending-add-your-own-operator)
 - [Public Interface](#public-interface)
-- [Compliance & tests](#compliance--tests)
+- [Compliance & tests](#compliance-and-tests)
 - [Security](#security)
 - [License](#license)
 - [Contributing](#contributing)
@@ -107,7 +107,7 @@ The operator then evaluates only the sub-rules it actually needs.
 
 **Examples**
 ```ruby
-`# filter: keep numbers >= 2
+# filter: keep numbers >= 2
 JsonLogic.apply(
   { "filter" => [ { "var" => "ints" }, { ">=" => [ { "var" => "" }, 2 ] } ] },
   { "ints" => [1,2,3] }
@@ -282,7 +282,7 @@ engine.registry.register(JsonLogic::Operations::StartsWith)
 
 ---
 
-## Compliance  & tests
+## Compliance and tests
 Optional: quick self-test
 
 ```bash
