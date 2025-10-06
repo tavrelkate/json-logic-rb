@@ -61,7 +61,7 @@ JsonLogic.apply({ "var" => "user.age" }, { "user" => { "age" => 42 } })
 
 ## How
 
-There are **two kinds of operators** in this implementation. This mapping follows the official behavior described on jsonlogic.com.
+There are **two kinds of operators** in this implementation. This mapping follows the official behavior described on [jsonlogic.com](https://jsonlogic.com).
 
 ### 1) Operators (default)
 
@@ -149,7 +149,7 @@ JsonLogic.apply({ "if" => [true, 42, { "/" => [1, 0] }] })
 
 ##  Supported Built-in Operations
 
-Below is a checklist that mirrors the sections on **jsonlogic.com/operations.html** and shows what this gem (library) implements.
+Below is a checklist that mirrors the sections on [**jsonlogic.com/operations.html**](https://jsonlogic.com/operations.html) and shows what this gem (library) implements.
 
 
 ### Accessing Data

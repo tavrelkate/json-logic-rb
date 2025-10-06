@@ -33,8 +33,6 @@ Match the semantics from the official docs:
 - Operations: https://jsonlogic.com/operations.html
 - Truthiness: https://jsonlogic.com/truthy.html
 
----
-
 ## PR checklist
 
 - [ ] Tests or examples included (when applicable)
