@@ -263,7 +263,7 @@ curl -fsSL https://jsonlogic.com/tests.json -o spec/tmp/tests.json
 ```
 2. Run it
 ```bash
-ruby script/compliance_2.rb spec/tmp/tests.json
+ruby script/compliance.rb spec/tmp/tests.json
 ```
 
 Expected output
