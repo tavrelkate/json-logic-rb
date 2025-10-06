@@ -1,7 +1,7 @@
 
 # Contributing to json-logic-rb
 
-**Contributions are very welcome!**  Whether it's a small typo fix, a new operator, a better example, or a larger refactor — your help makes this gem better. If you're unsure where to start, open an issue and we can figure it out together. T
+**Contributions are very welcome!**  Whether it's a small typo fix, a new operator, a better example, or a larger refactor — your help makes this gem better. If you're unsure where to start, open an issue and we can figure it out together.
 
 
 ## Quick links (README)
