@@ -313,3 +313,9 @@ Expected output
 - Rules are **data**, not code; no Ruby eval.
 - When evaluating untrusted rules, consider adding a timeout  and error handling at the call site.
 - Custom operations should be **pure** (no IO, no network, no shell).
+
+
+## Authors
+
+- [Valeriya Petrova](https://github.com/piatrova-valeriya1999)
+- [Tavrel Kate](https://github.com/tavrelkate)
