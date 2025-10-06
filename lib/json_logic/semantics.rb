@@ -2,6 +2,8 @@
 
 module JsonLogic
   module Semantics
+    NUMERIC_RE = /\A[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?\z/.freeze
+
     module_function
 
     def truthy?(v)
@@ -18,8 +20,16 @@ module JsonLogic
     def falsy?(v) = !truthy?(v)
 
     def to_number(v)
-      return v.to_f if v.is_a?(Numeric) || v.is_a?(String)
-      v.to_s.to_f
+      case v
+      when Integer then v
+      when Numeric then v.to_f
+      when String
+        s = v.strip
+        return nil unless NUMERIC_RE.match?(s)
+        s =~ /[.eE]/ ? s.to_f : s.to_i
+      else
+        nil
+      end
     end
 
     def strict_equal(a,b)
@@ -30,12 +40,13 @@ module JsonLogic
       end
     end
 
-    def loose_equal(a,b)
-      if (a.is_a?(Numeric)||a.is_a?(String)) && (b.is_a?(Numeric)||b.is_a?(String))
-        to_number(a) == to_number(b)
-      else
-        a == b
+    def loose_equal(a, b)
+      if (a.is_a?(Numeric) || a.is_a?(String)) && (b.is_a?(Numeric) || b.is_a?(String))
+        na = to_number(a)
+        nb = to_number(b)
+        return na == nb unless na.nil? || nb.nil?
       end
+      a == b
     end
   end
 end

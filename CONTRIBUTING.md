@@ -1,5 +1,4 @@
-
-# Contributing to json-logic-rb
+# Contribution Guide
 
 **Contributions are very welcome!**  Whether it's a small typo fix, a new operator, a better example, or a larger refactor — your help makes this gem better. If you're unsure where to start, open an issue and we can figure it out together.
 
@@ -19,7 +18,19 @@ Use the **same commands** as in the README’s [Compliance & tests](./README.md#
 
 
 
-## Adding an operator
+## How to contribute
+
+1. Fork the repo and create a branch from `main`
+2. Make your change (code, docs, or tests)
+3. Include examples for new operators or pretty mappings
+4. Update `README.md` if public behavior changes
+5. Run your tests by `rake`
+6. Open a Pull Request and describe:
+   - What changed and why
+   - Any breaking impacts
+   - Before/after output if applicable
+
+###Adding an operator
 
 Operator adding and registration are described in the README’s [Extending (add your own operator)](./README.md#extending-add-your-own-operator) section.
 
@@ -43,3 +54,6 @@ Match the semantics from the official docs:
 ## Versioning
 
 We use **Semantic Versioning** (MAJOR.MINOR.PATCH).
+
+Bump lib/json_logic/version.rb using SemVer.
+Update CHANGELOG.md.

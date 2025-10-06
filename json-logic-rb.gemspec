@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "lib/json_logic/version"
+
 Gem::Specification.new do |s|
   s.name                  = "json-logic-rb"
   s.version                = JsonLogic::VERSION
@@ -10,14 +12,14 @@ Gem::Specification.new do |s|
   s.authors               = ["Tavrel Kate"]
 
   s.license               = "MIT"
-  s.required_ruby_version = ">= 2.7"
+  s.required_ruby_version = ">= 3.0"
 
-  s.homepage              = "https://example.com/json-logic-rb"
+  s.homepage              = "https://github.com/tavrelkate/json-logic-rb"
   s.metadata = {
-    "homepage_uri"      => "https://example.com/json-logic-rb",
-    "source_code_uri"   => "https://example.com/json-logic-rb",
-    "documentation_uri" => "https://jsonlogic.com/operations.html",
-    "changelog_uri"     => "https://example.com/json-logic-rb/blob/main/CHANGELOG.md"
+    "homepage_uri"      => "https://github.com/tavrelkate/json-logic-rb",
+    "source_code_uri"   => "https://github.com/tavrelkate/json-logic-rb",
+    "documentation_uri" => "https://github.com/tavrelkate/json-logic-rb",
+    "changelog_uri"     => "https://github.com/tavrelkate/json-logic-rb/blob/main/CHANGELOG.md"
   }
 
   s.files = Dir[

@@ -43,7 +43,7 @@ gem install json-logic-rb
 ## Quick start
 
 ```ruby
-require "json-logic-rb"
+require 'json_logic'
 
 rule = { "+" => [1, 2, 3] }
 
