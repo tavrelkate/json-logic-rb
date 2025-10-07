@@ -30,7 +30,7 @@ Use the **same commands** as in the README’s [Compliance & tests](./README.md#
    - Any breaking impacts
    - Before/after output if applicable
 
-###Adding an operator
+### Adding an operator
 
 Operator adding and registration are described in the README’s [Extending (add your own operator)](./README.md#extending-add-your-own-operator) section.
 
