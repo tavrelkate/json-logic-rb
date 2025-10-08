@@ -31,8 +31,8 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      - name: Run compliance
-        run: bundle exec ruby script/compliance.rb
+      - name: Run compliance (core suite)
+        run: bundle exec ruby script/compliance.rb https://jsonlogic.com/tests.json
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
