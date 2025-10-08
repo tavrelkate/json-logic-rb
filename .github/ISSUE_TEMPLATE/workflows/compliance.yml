@@ -1,0 +1,44 @@
+name: Json Logic Compliance
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run_compliance:
+    name: Compliance — Ruby ${{ matrix.ruby }} · ${{ runner.os }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.4", "3.3", "3.2", "3.1"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Run compliance
+        run: bundle exec ruby script/compliance.rb
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-${{ matrix.ruby }}
+          path: |
+            tmp/compliance-${{ matrix.ruby }}.log
+            compliance*.{json,txt,log}
+          if-no-files-found: ignore
