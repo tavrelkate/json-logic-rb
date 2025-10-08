@@ -1,4 +1,4 @@
-name: Json Logic Compliance
+name: JSON Logic Compliance
 
 on:
   push:
@@ -15,30 +15,44 @@ concurrency:
 
 jobs:
   run_compliance:
-    name: Compliance — Ruby ${{ matrix.ruby }} · ${{ runner.os }}
-    runs-on: ubuntu-latest
+    name: Compliance — Ruby ${{ matrix.ruby }} · ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest]
         ruby: ["3.4", "3.3", "3.2", "3.1"]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
+
       - name: Run compliance (core suite)
         run: bundle exec ruby script/compliance.rb https://jsonlogic.com/tests.json
-      - name: Upload logs
+
+      - name: Step summary
+        if: always()
+        run: |
+          if [ -f tmp/compliance.json ]; then
+            ruby -rjson -e '
+              r = JSON.parse(File.read("tmp/compliance.json")); s = r["summary"]
+              ok = (s["failed"].to_i + s["errored"].to_i) == 0
+            '
+          fi
+
+      - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: compliance-${{ matrix.ruby }}
           path: |
+            tmp/compliance.json
             tmp/compliance-${{ matrix.ruby }}.log
-            compliance*.{json,txt,log}
           if-no-files-found: ignore
