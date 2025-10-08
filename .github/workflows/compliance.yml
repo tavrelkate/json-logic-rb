@@ -1,9 +1,9 @@
 name: JSON Logic Compliance
 
 on:
+  pull_request:
   push:
     branches: [main]
-  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -32,14 +32,14 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-          bundler-cache: true
 
-      - name: Run compliance (core suite)
+      - name: Run compliance (vendored core)
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p tmp
-          ruby -Ilib script/compliance.rb https://jsonlogic.com/tests.json \
+
+          ruby -Ilib script/compliance.rb spec/tmp/tests.json \
             2>&1 | tee tmp/compliance-${{ matrix.ruby }}.log
 
       - name: Step summary
@@ -51,7 +51,7 @@ jobs:
               ok = (s["failed"].to_i + s["errored"].to_i) == 0
               File.open(ENV["GITHUB_STEP_SUMMARY"], "a") do |f|
                 f.puts "### JSON Logic Compliance #{ok ? "✅" : "❌"}"
-                f.puts "- Source:  #{s["source"] || "n/a"}"
+                f.puts "- Source:  #{s["source"] || "spec/tmp/tests.json"}"
                 f.puts "- Total:   #{s["total"]}"
                 f.puts "- Passed:  #{s["passed"]}"
                 f.puts "- Failed:  #{s["failed"]}"
