@@ -22,23 +22,20 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        ruby: ["3.4", "3.3", "3.2", "3.1"]
+        ruby: ["3.4", "3.3", "3.2", "3.1", "3.0", "2.7"]
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
 
-      - name: Run compliance (vendored core)
+      - name: Run compliance
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p tmp
-
           ruby -Ilib script/compliance.rb spec/tmp/tests.json \
             2>&1 | tee tmp/compliance-${{ matrix.ruby }}.log
 
@@ -61,9 +58,8 @@ jobs:
             '
           fi
 
-      - name: Upload artifacts
+      - uses: actions/upload-artifact@v4
         if: always()
-        uses: actions/upload-artifact@v4
         with:
           name: compliance-${{ matrix.ruby }}
           path: |
