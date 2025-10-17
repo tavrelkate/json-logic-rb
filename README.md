@@ -1,3 +1,4 @@
+
 # json-logic-rb
 
 Ruby implementation of [JsonLogic](https://jsonlogic.com/) — simple and extensible.  Ships with a compliance runner for the official test suite.
@@ -218,34 +219,7 @@ Below is a checklist that mirrors the sections on [**jsonlogic.com/operations.ht
 
 ## Extending (Registering Custom Operators)
 
-
-
-### 1) Operator types — which one should you use?
-
-This library exposes three operator families, all implemented as **classes**:
-
-1.  **Value operators (eager)** — inherit from [`JsonLogic::Operation`](https://github.com/tavrelkate/json-logic-rb/blob/main/lib/json_logic/operation.rb).
-
-    -   The engine **evaluates all arguments first** and then calls your operator with plain Ruby **values**.
-
-    -   Use this for arithmetic, comparisons, string utilities, type coercions, etc., where evaluation order doesn’t matter.
-
-2.  **Lazy operators** — inherit from [`JsonLogic::LazyOperation`](https://github.com/tavrelkate/json-logic-rb/blob/main/lib/json_logic/lazy_operation.rb).
-
-    -   Receive **raw sub‑rules** (not pre‑evaluated). The operator decides what/when to evaluate (short‑circuiting, branching, etc.).
-
-    -   Great for `if`, `and`, `or`, `?:` and any control‑flow behavior.
-
-3.  **Enumerable operators** — inherit from [`JsonLogic::EnumerableOperation`](https://github.com/tavrelkate/json-logic-rb/blob/main/lib/json_logic/enumerable_operation.rb).
-
-    -   Standardizes “apply a rule per item” across collections: `map`, `filter`, `reduce`, `all`, `none`, `some`, etc.
-
-    -   Useful when you need consistent binding of the current item/accumulator.
-
-
-----------
-
-### 2) Signatures — what each type receives (and why)
+### 1) Operators Signatures — what each type receives (and why)
 
 In this gem, operator methods use a **consistent call shape**: the first parameter is the **array of operator arguments**, and the second is the current **data** (`data`). Thanks to Ruby’s destructuring, you can unpack the argument array right in the method signature.
 
@@ -330,8 +304,9 @@ end
 
 Using the default engine:
 
-```ruby    JsonLogic::Engine.default.registry.register(JsonLogic::Operations::StartsWith)
- ```
+```ruby
+JsonLogic::Engine.default.registry.register(JsonLogic::Operations::StartsWith)
+```
 
 
 After registration, you can use it in rules:
