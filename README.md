@@ -1,8 +1,9 @@
+
 # json-logic-rb
 
 Ruby implementation of [JsonLogic](https://jsonlogic.com/) — simple and extensible.  Ships with a compliance runner for the official test suite.
 
-  <a href="#"><img alt="build" src="https://img.shields.io/github/actions/workflow/status/your-org/json-logic-rb/ci.yml?branch=main"> <a href="https://rubygems.org/gems/json-logic-rb"><img alt="rubygems" src="https://img.shields.io/gem/v/json-logic-rb"></a> <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-informational"></a>
+  <a href="#"><img alt="build" src="https://img.shields.io/github/actions/workflow/status/your-org/json-logic-rb/ci-complience?branch=main"> <a href="https://rubygems.org/gems/json-logic-rb"><img alt="rubygems" src="https://img.shields.io/gem/v/json-logic-rb"></a> <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-informational"></a>
 
 
 ## Table of Contents
@@ -216,52 +217,160 @@ Below is a checklist that mirrors the sections on [**jsonlogic.com/operations.ht
 
 ---
 
-## Extending (add your own operator)
+## Extending (Registering Custom Operators)
 
-### Operation Type
+### 1) Operators Signatures — what each type receives (and why)
 
-Each operator is a class.
--  **Value operations** inherit `JsonLogic::Operation` (engine passes values).
+In this gem, operator methods use a **consistent call shape**: the first parameter is the **array of operator arguments**, and the second is the current **data** (`data`). Thanks to Ruby’s destructuring, you can unpack the argument array right in the method signature.
 
-- **Lazy operations** inherit `JsonLogic::LazyOperation` (engine passes raw sub‑rules).
+> **Note on `values_only?`:** When `values_only? == true` (value operators), the engine _still_ calls `call(args, data)`. Only the **argument preparation** changes (pre‑evaluated values vs raw rules). Keeping `data` in the signature ensures a uniform API and makes it easy to migrate operators between value and lazy styles.
 
-- **Enumerable operations** inherit `JsonLogic::EnumerableOperation` (standardized data binding for per‑item rules).
+#### Value operators ([`JsonLogic::Operation`](https://github.com/tavrelkate/json-logic-rb/blob/main/lib/json_logic/operation.rb))
 
-### Guide
-
-First, create the Class for you Operation based on it's type:
 ```ruby
-class JsonLogic::Operations::StartsWith < JsonLogic::Operation
-  def self.op_name = "starts_with"  # {"starts_with": [string, prefix]}
-
-  def call((str, prefix), _data)
-    str.to_s.start_with?(prefix.to_s)
+class MyOp < JsonLogic::Operation
+  def self.op_name = "my_op"
+  def call((arg1, arg2, *rest), data)
+    # arg1, arg2 are ALREADY evaluated to Ruby values
   end
 end
+
 ```
 
-Second, register your operation:
+**Why?** The engine has already evaluated arguments, so your operator only handles values. `data` is passed for consistency (occasionally useful, though rarely needed for pure value ops).
+
+**Also:** Even in value mode (`values_only? == true`), `data` is still passed. It’s perfectly fine to ignore it using `_data` in the signature.
+
+#### Lazy operators ([`JsonLogic::LazyOperation`](https://github.com/tavrelkate/json-logic-rb/blob/main/lib/json_logic/lazy_operation.rb))
+
+```ruby
+class IfOp < JsonLogic::LazyOperation
+  def self.op_name = "if"
+  def call((cond_rule, then_rule, else_rule), data)
+    # cond_rule / then_rule / else_rule are RAW rules (not values)
+    cond = JsonLogic::Engine.default.evaluate(cond_rule, data)
+    cond ? JsonLogic::Engine.default.evaluate(then_rule, data)
+         : (else_rule.nil? ? nil : JsonLogic::Engine.default.evaluate(else_rule, data))
+  end
+end
+
+```
+
+**Why?** Lazy operators control evaluation themselves (branching and short‑circuiting), so they receive raw rules and invoke evaluation only where needed.
+
+#### Enumerable operators ([`JsonLogic::EnumerableOperation`](https://github.com/tavrelkate/json-logic-rb/blob/main/lib/json_logic/enumerable_operation.rb))
+
+```ruby
+class Map < JsonLogic::EnumerableOperation
+  def self.op_name = "map"
+  def call((collection_rule, item_rule), data)
+    items = JsonLogic::Engine.default.evaluate(collection_rule, data)
+    Array(items).map do |item|
+      # Simplest form: re-root data to the current item
+      JsonLogic::Engine.default.evaluate(item_rule, item)
+    end
+  end
+end
+
+```
+
+**Why?** First you evaluate the rule that yields the collection; then, for each item, you evaluate the per‑item rule in that item’s context.
+
+----------
+
+### 3) Creating a new operator (step‑by‑step)
+
+1.  **Pick the type**: Value, Lazy, or Enumerable (see §1).
+
+2.  **Create a class** and provide a **machine name** via `op_name`:
+
+    ```ruby
+    class JsonLogic::Operations::StartsWith < JsonLogic::Operation
+      def self.op_name = "starts_with"   # used as the JSON key: {"starts_with": [...]}
+      def call((str, prefix), _data)
+        str.to_s.start_with?(prefix.to_s)
+      end
+    end
+
+    ```
+
+3.  **(Optional) Destructuring**: unpack the args array in the signature for clarity.
+
+
+----------
+
+### 4) Registering the operator
+
+
+Using the default engine:
+
 ```ruby
 JsonLogic::Engine.default.registry.register(JsonLogic::Operations::StartsWith)
 ```
 
-Use it!
-```ruby
-rule = {
-  "if" => [
-    { "starts_with" => [ { "var" => "email" }, "admin@" ] },
-    "is_admin",
-    "regular_user"
-  ]
-}
 
-p JsonLogic.apply(rule, { "email" => "admin@example.com" })
-# => "is_admin"
-p JsonLogic.apply(rule, { "email" => "user@example.com" })
-# => "regular_user"
+After registration, you can use it in rules:
+
+```json
+{ "starts_with": [ { "var": "email" }, "admin@" ] }
 ```
 
----
+----------
+
+### 4) Another way  – Register **raw callables** (Proc/Lambda)
+
+The public API is class‑oriented, but **technically** you can express an operator as a `Proc`/`Lambda` and register it through a tiny adapter. Two convenient patterns:
+
+#### A) One‑off inline adapter class
+
+```ruby
+fn = ->((str, prefix), _data) { str.to_s.start_with?(prefix.to_s) }
+
+klass = Class.new(JsonLogic::Operation) do
+  define_singleton_method(:op_name) { "starts_with" }
+  define_method(:call) { |args, data| fn.call(args, data) }
+end
+
+JsonLogic::Engine.default.registry.register(klass)
+
+```
+
+#### B) A small DSL helper `register_proc`
+
+Create a helper to register callables in one line.
+
+```ruby
+module JsonLogic
+  module DSL
+    def self.register_proc(name, lazy: false, &block)
+      base = lazy ? JsonLogic::LazyOperation : JsonLogic::Operation
+      klass = Class.new(base) do
+        define_singleton_method(:op_name) { name.to_s }
+        define_method(:call) { |args, data| block.call(args, data) }
+      end
+      JsonLogic::Engine.default.registry.register(klass)
+      klass
+    end
+  end
+end
+
+JsonLogic::DSL.register_proc("starts_with") do |(str, prefix), _data|
+  str.to_s.start_with?(prefix.to_s)
+end
+
+JsonLogic::DSL.register_proc("if", lazy: true) do |(cond_rule, then_rule, else_rule), data|
+  cond = JsonLogic::Engine.default.evaluate(cond_rule, data)
+  cond ? JsonLogic::Engine.default.evaluate(then_rule, data)
+       : (else_rule.nil? ? nil : JsonLogic::Engine.default.evaluate(else_rule, data))
+end
+
+```
+
+**Why this is useful:** rapid prototyping with minimal boilerplate; later you can “promote” the `Proc` into a full class without changing existing JSON rules.
+
+
+
+
 
 ## Public Interface
 Use the high-level facade to evaluate a JsonLogic rule against input and get a plain Ruby value back.
