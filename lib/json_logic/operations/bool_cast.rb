@@ -4,6 +4,6 @@ class JsonLogic::Operations::BoolCast < JsonLogic::Operation
   def self.op_name = "!!"
 
   def call((a), _data)
-    JsonLogic::Semantics.truthy?(a)
+    truthy?(a)
   end
 end

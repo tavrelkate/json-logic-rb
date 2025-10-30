@@ -7,7 +7,7 @@ class JsonLogic::Operations::And < JsonLogic::LazyOperation
     last = nil
     args.each do |a|
       last = JsonLogic.apply(a, data)
-      return last unless JsonLogic::Semantics.truthy?(last)
+      return last unless truthy?(last)
     end
     last
   end

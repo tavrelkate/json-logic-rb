@@ -5,7 +5,7 @@ class JsonLogic::Operations::Or < JsonLogic::LazyOperation
   def call(args, data)
     args.each do |a|
       v = JsonLogic.apply(a, data)
-      return v if JsonLogic::Semantics.truthy?(v)
+      return v if truthy?(v)
     end
     args.empty? ? nil : JsonLogic.apply(args.last, data)
   end
