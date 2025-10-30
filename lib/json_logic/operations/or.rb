@@ -7,6 +7,7 @@ class JsonLogic::Operations::Or < JsonLogic::LazyOperation
       v = JsonLogic.apply(a, data)
       return v if truthy?(v)
     end
+
     args.empty? ? nil : JsonLogic.apply(args.last, data)
   end
 end

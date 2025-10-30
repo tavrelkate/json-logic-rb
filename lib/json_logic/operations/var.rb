@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class JsonLogic::Operations::Var < JsonLogic::Operation
-  def self.op_name = "var"; def self.values_only? = false
+  def self.op_name = "var";
+  def self.values_only? = false
+
   def call((path_rule, fallback_rule), data)
     path = JsonLogic.apply(path_rule, data)
     return data if path == ""
@@ -10,6 +12,7 @@ class JsonLogic::Operations::Var < JsonLogic::Operation
     return nil if fallback_rule.nil?
     JsonLogic.apply(fallback_rule, data)
   end
+
   def dig(obj, path)
     return nil if obj.nil?
     cur = obj
