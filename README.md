@@ -171,12 +171,12 @@ Below is a list that mirrors the sections on [jsonlogic.com/operations.html](htt
 
 Need a custom operation? It’s straightforward.
 
-### Quick — register a Proc/Lambda
+### Quick — register a Proc or Lambda
 
-Register little anonymous functions.
+Register little anonymous functions, by passing a Proc or Lambda.
 
 ```ruby
-JsonLogic.add_operation("times2") { |(x), _| x.to_i * 2 }
+JsonLogic.add_operation("times2") { |(value), _| value.to_i * 2 }
 ```
 
 Once the function added, you can use it in your logic.
