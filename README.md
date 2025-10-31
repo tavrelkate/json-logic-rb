@@ -187,18 +187,26 @@ JsonLogic.apply({ "times2" => [21] })
 ```
 
 Is useful for rapid prototyping with minimal boilerplate;
-Later you can “promote” the it into a full class.
+Later you can “promote” it into a full class or use additional features.
 
 
-### 1) Pick the operation type
+### 1) Pick the Operation type
 Choose one of:
 - **Default**
 ```ruby
 class JsonLogic::Operations::StartsWith < JsonLogic::Operation; end
 ```
+For anonymous functions:
+```ruby
+JsonLogic.add_operation("starts_with", lazy: false) do; end
+```
 - **Lazy**
 ```ruby
 class JsonLogic::Operations::StartsWith < JsonLogic::LazyOperation; end
+```
+For anonymous functions:
+```ruby
+JsonLogic.add_operation("starts_with", lazy: true) do; end
 ```
 
 See [§How](#how) for details.
