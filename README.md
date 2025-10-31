@@ -58,30 +58,30 @@ There are **two types of operations** in this implementation: Default Operations
 For **Default Operations**, the engine **evaluates all arguments first** and then calls the operator with the **resulting Ruby values**.  
 This matches the reference behavior for arithmetic, comparisons, string operations, and other pure operations that do not control evaluation order.
 
-**References:**
+**Groups and references:**
 
-- Numeric Operations — <https://jsonlogic.com/operations.html#numeric-operations>
-- String Operations — <https://jsonlogic.com/operations.html#string-operations>
-- Array Operations (simple transforms like `merge`, membership `in`) — <https://jsonlogic.com/operations.html#array-operations>
+- [Numeric operations](https://jsonlogic.com/operations.html#numeric-operations)
+- [String operations](https://jsonlogic.com/operations.html#string-operations)
+- [Array operations](https://jsonlogic.com/operations.html#array-operations) — simple transforms like `merge`, membership `in`.
 
 ### 2. Lazy Operations
 
-Some operations must control **whether** and **when** their arguments are evaluated. They implement branching, short‑circuiting, or “apply a rule per item” semantics. For these **Lazy Operations**, the engine passes **raw sub‑rules** and current data. The operator then evaluates only the sub‑rules it actually needs.
+Some operations must control **whether** and **when** their arguments are evaluated. They implement branching, short-circuiting, or “apply a rule per item” semantics. For these **Lazy Operations**, the engine passes **raw sub-rules** and current data. The operator then evaluates only the sub-rules it actually needs.
 
 **Groups and references:**
 
 - **Branching / boolean control** — `if`, `?:`, `and`, `or`, `var`  
-  Logic and Boolean Operations — <https://jsonlogic.com/operations.html#logic-and-boolean-operations>  
-  Truthiness — <https://jsonlogic.com/truthy.html>
+  [Logic & boolean operations](https://jsonlogic.com/operations.html#logic-and-boolean-operations) • [Truthiness](https://jsonlogic.com/truthy.html)
 
 - **Enumerable operators** — `map`, `filter`, `reduce`, `all`, `none`, `some`  
-  Array Operations — <https://jsonlogic.com/operations.html#array-operations>
+  [Array operations](https://jsonlogic.com/operations.html#array-operations)
 
-**How enumerable per‑item evaluation works:**
+**How enumerable per-item evaluation works:**
 
 1. The first argument is a rule that returns the list of items — evaluated **once** to a Ruby array.  
-2. The second argument is the per‑item rule — evaluated **for each item** with that item as the **current root**.  
+2. The second argument is the per-item rule — evaluated **for each item** with that item as the **current root**.  
 3. For `reduce`, the current item is also available as `"current"`, and the running total as `"accumulator"`.
+
 
 **Example #1**
 
