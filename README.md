@@ -55,7 +55,7 @@ There are **two types of operations** in this implementation: Default Operations
 
 ### 1. Default Operations
 
-For **Default Operations**, the engine **evaluates all arguments first** and then calls the operator with the **resulting Ruby values**.  
+For **Default Operations**, the engine **evaluates all arguments first** and then calls the operator with the **resulting Ruby values**.
 This matches the reference behavior for arithmetic, comparisons, string operations, and other pure operations that do not control evaluation order.
 
 **Groups and references:**
@@ -70,16 +70,16 @@ Some operations must control **whether** and **when** their arguments are evalua
 
 **Groups and references:**
 
-- **Branching / boolean control** — `if`, `?:`, `and`, `or`, `var`  
+- **Branching / boolean control** — `if`, `?:`, `and`, `or`, `var`
   [Logic & boolean operations](https://jsonlogic.com/operations.html#logic-and-boolean-operations) • [Truthiness](https://jsonlogic.com/truthy.html)
 
-- **Enumerable operators** — `map`, `filter`, `reduce`, `all`, `none`, `some`  
+- **Enumerable operators** — `map`, `filter`, `reduce`, `all`, `none`, `some`
   [Array operations](https://jsonlogic.com/operations.html#array-operations)
 
 **How enumerable per-item evaluation works:**
 
-1. The first argument is a rule that returns the list of items — evaluated **once** to a Ruby array.  
-2. The second argument is the per-item rule — evaluated **for each item** with that item as the **current root**.  
+1. The first argument is a rule that returns the list of items — evaluated **once** to a Ruby array.
+2. The second argument is the per-item rule — evaluated **for each item** with that item as the **current root**.
 3. For `reduce`, the current item is also available as `"current"`, and the running total as `"accumulator"`.
 
 
@@ -131,7 +131,7 @@ Below is a list that mirrors the sections on [jsonlogic.com/operations.html](htt
 |  `var`  | ✅ |
 |  `missing`  | ✅ |
 |  `missing_some`  | ✅ |
-|[Logic and Boolean Operations](https://jsonlogic.com/operations.html#logic-and-boolean-operations]) 
+|[Logic and Boolean Operations](https://jsonlogic.com/operations.html#logic-and-boolean-operations])
 |  `if`  | ✅ |
 |  `==`  | ✅ |
 |  `===`  | ✅ |
@@ -171,6 +171,25 @@ Below is a list that mirrors the sections on [jsonlogic.com/operations.html](htt
 
 Need a custom operation? It’s straightforward.
 
+### Quick — register a Proc/Lambda
+
+Register little anonymous functions.
+
+```ruby
+JsonLogic.add_operation("times2") { |(x), _| x.to_i * 2 }
+```
+
+Once the function added, you can use it in your logic.
+
+```ruby
+JsonLogic.apply({ "times2" => [21] })
+# => 42
+```
+
+Is useful for rapid prototyping with minimal boilerplate;
+Later you can “promote” the it into a full class.
+
+
 ### 1) Pick the operation type
 Choose one of:
 - **Default**
@@ -197,17 +216,17 @@ See [§JsonLogic Semantic](#jsonlogic-semantic) for details.
 ### 3) Create an Operation and provide a machine name
 
 Operation methods use a consistent call shape.
-  
+
 - The first parameter is the **array of operator arguments**.
 - The second is the current **data**.
 
-  
+
 
 Thanks to Ruby’s destructuring, you can unpack the argument array right in the method signature.
 
 ```ruby
 class JsonLogic::Operations::StartsWith < JsonLogic::Operation
-  def self.op_name = "starts_with"
+  def self.name = "starts_with"
   def call((str, prefix), _data)
     # str, prefix are ALREADY evaluated to Ruby values
     str.to_s.start_with?(prefix.to_s)
@@ -227,45 +246,11 @@ After registration, use it in rules:
 { "starts_with": [ { "var": "email" }, "admin@" ] }
 ```
 
-### Alternative — register a Proc/Lambda
 
-The public API is class‑oriented, but **technically** you can express an Operations as a `Proc`/`Lambda` and register it through a little anonymous functions.
-
-DSL to register callables:
-
-```ruby
-module JsonLogic
-  module DSL
-    def self.register_proc(name, lazy: false, &block)
-      base = lazy ? JsonLogic::LazyOperation : JsonLogic::Operation
-      klass = Class.new(base) do
-        define_singleton_method(:op_name) { name.to_s }
-        define_method(:call) { |args, data| block.call(args, data) }
-      end
-      JsonLogic::Engine.default.registry.register(klass)
-      klass
-    end
-  end
-end
-```
-
-  
-
-Is useful for rapid prototyping with minimal boilerplate;
-
-  
-
-```ruby
-JsonLogic::DSL.register_proc("starts_with") do |(str, prefix), _data|
-  str.to_s.start_with?(prefix.to_s)
-end
-```
-
-Later you can “promote” the it into a full class.
 
 ## JsonLogic Semantic
 
-All supported Operations follow JsonLogic semantics. 
+All supported Operations follow JsonLogic semantics.
 
 ### Comparisons
 As JsonLogic primary developed in JavaScript it inherits JavaScript's type coercion in build-in Operations. JsonLogic (JS‑style) comparisons coerce types; Ruby does not.
@@ -293,7 +278,7 @@ using JsonLogic::Semantics
 
 ### Truthiness
 
-JsonLogic’s truthiness differs from Ruby’s (see <https://jsonlogic.com/truthy.html>).  
+JsonLogic’s truthiness differs from Ruby’s (see <https://jsonlogic.com/truthy.html>).
 In Ruby, only `false` and `nil` are falsey. In JsonLogic empty strings and empty arrays are also falsey.
 
 **In Ruby:**
@@ -318,18 +303,18 @@ truthy?([])
 
 Optional: quick self-test
 
-  
+
 
 ```bash
 ruby test/selftest.rb
 ```
 
-  
+
 Official test suite
 
 1. Fetch the official suite
 
-  
+
 
 ```bash
 mkdir -p spec/tmp

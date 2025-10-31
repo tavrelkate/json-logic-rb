@@ -7,7 +7,7 @@ module JsonLogic
     end
 
     def register(op_class)
-      name = op_class.op_name or raise ArgumentError, 'op_name missing'
+      name = op_class.name or raise ArgumentError, 'name missing'
       @map[name.to_s] = op_class
       self
     end

@@ -3,7 +3,7 @@
 using JsonLogic::Semantics
 
 class JsonLogic::Operations::If < JsonLogic::LazyOperation
-  def self.op_name = "if"
+  def self.name = "if"
 
   def call(args, data)
     i = 0

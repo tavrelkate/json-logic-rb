@@ -3,7 +3,7 @@
 using JsonLogic::Semantics
 
 class JsonLogic::Operations::Not < JsonLogic::Operation
-  def self.op_name = "!";
+  def self.name = "!";
 
   def call((a), _data) = !a
 end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class JsonLogic::Operations::Substr < JsonLogic::Operation
-  def self.op_name = "substr"
+  def self.name = "substr"
 
   def call(values, _data)
     s, i, len = values

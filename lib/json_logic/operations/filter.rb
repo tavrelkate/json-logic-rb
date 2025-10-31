@@ -3,7 +3,7 @@
 using JsonLogic::Semantics
 
 class JsonLogic::Operations::Filter < JsonLogic::EnumerableOperation
-  def self.op_name = "filter"
+  def self.name = "filter"
 
   def call(args, data)
     items, rule_applied_to_each_item = resolve_items_and_per_item_rule(args, data)

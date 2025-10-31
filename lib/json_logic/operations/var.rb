@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class JsonLogic::Operations::Var < JsonLogic::Operation
-  def self.op_name = "var";
+  def self.name = "var";
   def self.values_only? = false
 
   def call((path_rule, fallback_rule), data)
