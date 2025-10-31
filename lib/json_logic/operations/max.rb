@@ -2,5 +2,6 @@
 
 class JsonLogic::Operations::Max < JsonLogic::Operation
   def self.op_name = "max"
-  def call(values, _data) = values.max_by { |v| JsonLogic::Semantics.to_number(v) }
+
+  def call(values, _data) = values.max
 end

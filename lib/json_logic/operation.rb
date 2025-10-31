@@ -2,6 +2,8 @@
 
 module JsonLogic
   class Operation
+    include Semantics
+
     def self.op_name = nil
 
     def self.values_only? = true

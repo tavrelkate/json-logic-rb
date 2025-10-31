@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
+using JsonLogic::Semantics
+
 class JsonLogic::Operations::GT < JsonLogic::Operation
   def self.op_name = ">"
-  def call((a,b), _data) = JsonLogic::Semantics.to_number(a) > JsonLogic::Semantics.to_number(b)
+  def call((a,b), _data) = a > b
 end

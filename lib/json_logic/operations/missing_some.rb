@@ -10,6 +10,7 @@ class JsonLogic::Operations::MissingSome < JsonLogic::Operation
   end
 
   private
+
   def dig(obj, path)
     return nil if obj.nil?
     cur = obj
