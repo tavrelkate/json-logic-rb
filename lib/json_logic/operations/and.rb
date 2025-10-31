@@ -3,7 +3,7 @@
 using JsonLogic::Semantics
 
 class JsonLogic::Operations::And < JsonLogic::LazyOperation
-  def self.op_name = "and"
+  def self.name = "and"
 
   def call(args, data)
     last = nil

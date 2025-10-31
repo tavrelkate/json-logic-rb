@@ -3,7 +3,7 @@
 using JsonLogic::Semantics
 
 class JsonLogic::Operations::LT < JsonLogic::Operation
-  def self.op_name = "<"
+  def self.name = "<"
 
   def call(values, _data)
     return values[0] < values[1] if values.size == 2

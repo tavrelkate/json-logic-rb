@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class JsonLogic::Operations::Missing < JsonLogic::Operation
-  def self.op_name = "missing"
+  def self.name = "missing"
 
   def call(values, data)
     keys =

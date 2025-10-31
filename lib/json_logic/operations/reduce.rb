@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class JsonLogic::Operations::Reduce < JsonLogic::EnumerableOperation
-  def self.op_name = "reduce"
+  def self.name = "reduce"
 
   def call(args, data)
     rule_that_returns_items, step_rule_applied_per_item, rule_that_returns_initial_accumulator = args

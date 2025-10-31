@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class JsonLogic::Operations::MissingSome < JsonLogic::Operation
-  def self.op_name = "missing_some"
+  def self.name = "missing_some"
 
   def call((min_ok, list), data)
     arr = list.is_a?(Array) ? list : Array(list)

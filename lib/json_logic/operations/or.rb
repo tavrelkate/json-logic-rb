@@ -2,7 +2,7 @@
 
 using JsonLogic::Semantics
 class JsonLogic::Operations::Or < JsonLogic::LazyOperation
-  def self.op_name = "or"
+  def self.name = "or"
 
   def call(args, data)
     args.each do |a|
