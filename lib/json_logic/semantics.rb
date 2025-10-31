@@ -86,19 +86,13 @@ module JsonLogic
       end
     end
 
-    [String, Integer, Float].each do |klass|
+    [String, Integer, Float, NilClass, Array, TrueClass, FalseClass].each do |klass|
       refine klass do
         def ==(other) = JsonLogic::Semantics.eq(self, other)
         def >(other)  = (c = JsonLogic::Semantics.cmp(self, other)) && c == 1
         def >=(other) = (c = JsonLogic::Semantics.cmp(self, other)) && (c == 1 || c == 0)
         def <(other)  = (c = JsonLogic::Semantics.cmp(self, other)) && c == -1
         def <=(other) = (c = JsonLogic::Semantics.cmp(self, other)) && (c == -1 || c == 0)
-      end
-    end
-
-    [Array, TrueClass, FalseClass, NilClass].each do |klass|
-      refine klass do
-        def ==(other) = JsonLogic::Semantics.eq(self, other)
       end
     end
   end
