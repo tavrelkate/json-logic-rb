@@ -86,44 +86,20 @@ module JsonLogic
       end
     end
 
-    refine String do
-      def ==(other) = JsonLogic::Semantics.eq(self, other)
-      def >(other)  = (c = JsonLogic::Semantics.cmp(self, other)) && c == 1
-      def >=(other) = (c = JsonLogic::Semantics.cmp(self, other)) && (c == 1 || c == 0)
-      def <(other)  = (c = JsonLogic::Semantics.cmp(self, other)) && c == -1
-      def <=(other) = (c = JsonLogic::Semantics.cmp(self, other)) && (c == -1 || c == 0)
+    [String, Integer, Float].each do |klass|
+      refine klass do
+        def ==(other) = JsonLogic::Semantics.eq(self, other)
+        def >(other)  = (c = JsonLogic::Semantics.cmp(self, other)) && c == 1
+        def >=(other) = (c = JsonLogic::Semantics.cmp(self, other)) && (c == 1 || c == 0)
+        def <(other)  = (c = JsonLogic::Semantics.cmp(self, other)) && c == -1
+        def <=(other) = (c = JsonLogic::Semantics.cmp(self, other)) && (c == -1 || c == 0)
+      end
     end
 
-    refine Integer do
-      def ==(other) = JsonLogic::Semantics.eq(self, other)
-      def >(other)  = (c = JsonLogic::Semantics.cmp(self, other)) && c == 1
-      def >=(other) = (c = JsonLogic::Semantics.cmp(self, other)) && (c == 1 || c == 0)
-      def <(other)  = (c = JsonLogic::Semantics.cmp(self, other)) && c == -1
-      def <=(other) = (c = JsonLogic::Semantics.cmp(self, other)) && (c == -1 || c == 0)
-    end
-
-    refine Float do
-      def ==(other) = JsonLogic::Semantics.eq(self, other)
-      def >(other)  = (c = JsonLogic::Semantics.cmp(self, other)) && c == 1
-      def >=(other) = (c = JsonLogic::Semantics.cmp(self, other)) && (c == 1 || c == 0)
-      def <(other)  = (c = JsonLogic::Semantics.cmp(self, other)) && c == -1
-      def <=(other) = (c = JsonLogic::Semantics.cmp(self, other)) && (c == -1 || c == 0)
-    end
-
-    refine Array do
-      def ==(other) = JsonLogic::Semantics.eq(self, other)
-    end
-
-    refine TrueClass do
-      def ==(other) = JsonLogic::Semantics.eq(self, other)
-    end
-
-    refine FalseClass do
-      def ==(other) = JsonLogic::Semantics.eq(self, other)
-    end
-
-    refine NilClass do
-      def ==(other) = JsonLogic::Semantics.eq(self, other)
+    [Array, TrueClass, FalseClass, NilClass].each do |klass|
+      refine klass do
+        def ==(other) = JsonLogic::Semantics.eq(self, other)
+      end
     end
   end
 end
