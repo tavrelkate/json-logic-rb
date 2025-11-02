@@ -8,7 +8,7 @@ We keep this gem small and sharp. If you can make it simpler – do it. If you c
 
 ## Quick links
 
-See **[README](./README.md)** — everything you need to understand the JsonLogic rule tree.
+See **[README](./README.md)** — everything you need to understand the JsonLogic rule tree specifics in Ruby.
 ## How to contribute
 
 Fork. Branch. Change. Test. PR.
@@ -16,7 +16,7 @@ Fork. Branch. Change. Test. PR.
 
 ### Adding an operator
 
-Read **[§ Adding Operations](./README.md#adding-operations)**. Prefer the class‑based API. The Proc/Lambda DSL is fine for a quick spike; promote to a class before merge.
+Read **[§ Adding Operations](./README.md#adding-operations)**. Prefer the class‑based API. The Proc & Lambda DSL is fine for a quick spike; promote to a class before merge.
 
 Auto‑registration works for classes under [lib/json_logic/operations/](./lib/json_logic/operations/).
 
@@ -31,7 +31,7 @@ Auto‑registration works for classes under [lib/json_logic/operations/](./lib/j
 
 - [ ] Tests or examples included (when applicable).
 - [ ] Compliance suite passes (see **[§ Compliance and tests](./README.md#compliance-and-tests)**).
-- [ ] **[README](./README.md)** and related docs updated if user‑facing behavior changed.
+- [ ] **[README](./README.md)** updated if user‑facing behavior changed.
 - [ ] Version bumped in [Gem Version File](./lib/json_logic/version.rb).
 - [ ] **[CHANGELOG](./CHANGELOG.md)** updated.
 

@@ -299,7 +299,7 @@ using JsonLogic::Semantics
 ### Truthiness
 
 JsonLogic’s truthiness differs from Ruby’s (see  [Json Logic Website Truthy and Falsy](https://jsonlogic.com/truthy.html)).
-In Ruby, only `false` and `nil` are falsey. In JsonLogic empty strings and empty arrays are also falsey.
+In Ruby, only `false` and `nil` are falsey. In JsonLogic empty strings and empty arrays are falsey too.
 
 **In Ruby:**
 ```ruby
