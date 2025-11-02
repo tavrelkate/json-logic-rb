@@ -1,6 +1,7 @@
 
 
 
+
 # json-logic-rb
 
 Ruby implementation of [JsonLogic](https://jsonlogic.com/) — simple and extensible. Ships with a compliance runner for the official test suite.
@@ -64,11 +65,11 @@ JsonLogic.apply({ "var" => "user.age" }, { "user" => { "age" => 42 } })
 
 ## How
 
-There are **two types of operations**: Default Operations and Lazy Operations.
+There are two types of operations: [Default Operations](#1-default-operations)  and [Lazy Operations](#2-lazy-operations)
 
 ### 1. Default Operations
 
-For **Default Operations**, the it **evaluates all arguments first** and then calls the operator with the **resulting Ruby values**.
+For **Default Operations**, the it evaluates all arguments first and then calls the operator with the resulting Ruby values.
 This matches the reference behavior for arithmetic, comparisons, string operations, and other pure operations that do not control evaluation order.
 
 **Groups and references:**
@@ -79,7 +80,7 @@ This matches the reference behavior for arithmetic, comparisons, string operatio
 
 ### 2. Lazy Operations
 
-Some operations must control **whether** and **when** their arguments are evaluated. They implement branching, short-circuiting, or “apply a rule per item” semantics. For these **Lazy Operations**, the engine passes raw sub-rules and data. The operator then evaluates only the sub-rules it actually needs.
+Some operations must control whether and when their arguments are evaluated. They implement branching, short-circuiting, or “apply a rule per item” semantics. For these **Lazy Operations**, the engine passes raw sub-rules and data. The operator then evaluates only the sub-rules it actually needs.
 
 **Groups and references:**
 
@@ -92,7 +93,7 @@ Some operations must control **whether** and **when** their arguments are evalua
 **How enumerable per-item evaluation works:**
 
 1. The first argument is a rule that returns the list of items — evaluated once to a Ruby array.
-2. The second argument is the per-item rule — evaluated **for each item** with that item as the **current root**.
+2. The second argument is the per-item rule — evaluated for each item with that item as the current root.
 3. For `reduce`, the current item is also available as `"current"`, and the running total as `"accumulator"`.
 
 
@@ -123,14 +124,15 @@ JsonLogic.apply(
 
 ### Why laziness matters?
 
-Lazy operations  prevent evaluation of branches you do not need. If division by zero raised an error (hypothetically), lazy control would avoid it.
+Lazy operations  prevent evaluation of branches you do not need.
+If hypothetically division by zero raises an error, lazy control would avoid it.
 
 ```ruby
 JsonLogic.apply({ "or" => [1, { "/" => [1, 0] }] })
 # => 1
 ```
 
-> In this gem `/` returns `nil` on divide‑by‑zero, but these examples show why lazy evaluation is required by the spec: branching and boolean operators must not evaluate unused branches.
+> In this gem division returns nil on divide‑by‑zero, but this example show why lazy evaluation is required by the spec: branching and boolean operators must not evaluate unused branches.
 
 ## Supported Operations (Built‑in)
 
