@@ -33,13 +33,13 @@ Download the gem locally
 ```bash
 gem install json-logic-rb
 ```
-If needed – add to your  `Gemfile`
+If needed – add to your  Gemfile
 
 ```ruby
 gem "json-logic-rb"
 ```
 
-Then install:
+Then install
 ```shell
 bundle install
 ```
@@ -68,7 +68,7 @@ There are **two types of operations**: Default Operations and Lazy Operations.
 
 ### 1. Default Operations
 
-For **Default Operations**, the engine **evaluates all arguments first** and then calls the operator with the **resulting Ruby values**.
+For **Default Operations**, the it **evaluates all arguments first** and then calls the operator with the **resulting Ruby values**.
 This matches the reference behavior for arithmetic, comparisons, string operations, and other pure operations that do not control evaluation order.
 
 **Groups and references:**
@@ -130,7 +130,7 @@ JsonLogic.apply({ "or" => [1, { "/" => [1, 0] }] })
 # => 1
 ```
 
-> In this gem `/` returns `nil` on divide‑by‑zero, but these examples show **why** lazy evaluation is required by the spec: branching and boolean operators must **not** evaluate unused branches.
+> In this gem `/` returns `nil` on divide‑by‑zero, but these examples show why lazy evaluation is required by the spec: branching and boolean operators must not evaluate unused branches.
 
 ## Supported Operations (Built‑in)
 
@@ -185,7 +185,7 @@ Need a custom Operation? It’s straightforward. Start small with a Proc or Lamb
 
 
 ### 	Enable JsonLogic Semantics (optional)
-Enable semantics to mirror JsonLogic’s comparison/truthiness in Ruby.
+Enable semantics to mirror JsonLogic’s comparison and truthiness in Ruby.
 
 See [§JsonLogic Semantic](#jsonlogic-semantic) for details.
 
@@ -292,12 +292,13 @@ As JsonLogic primary developed in JavaScript it inherits JavaScript's type coerc
 ```ruby
 using JsonLogic::Semantics
 
-1 >= "1.0" # => true
+1 >= "1.0"
+# => true
 ```
 
 ### Truthiness
 
-JsonLogic’s truthiness differs from Ruby’s (see <https://jsonlogic.com/truthy.html>).
+JsonLogic’s truthiness differs from Ruby’s (see  [Json Logic Website Truthy and Falsy](https://jsonlogic.com/truthy.html)).
 In Ruby, only `false` and `nil` are falsey. In JsonLogic empty strings and empty arrays are also falsey.
 
 **In Ruby:**
