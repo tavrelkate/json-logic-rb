@@ -1,4 +1,6 @@
 
+
+
 # json-logic-rb
 
 Ruby implementation of [JsonLogic](https://jsonlogic.com/) — simple and extensible. Ships with a compliance runner for the official test suite.
@@ -27,8 +29,19 @@ JsonLogic rules are JSON trees. The engine walks that tree and returns a Ruby va
 
 ## Install
 
+Download the gem locally
 ```bash
 gem install json-logic-rb
+```
+If needed – add to your  `Gemfile`
+
+```ruby
+gem "json-logic-rb"
+```
+
+Then install:
+```shell
+bundle install
 ```
 
 ## Quick start
@@ -51,7 +64,7 @@ JsonLogic.apply({ "var" => "user.age" }, { "user" => { "age" => 42 } })
 
 ## How
 
-There are **two types of operations** in this implementation: Default Operations and Lazy Operations.
+There are **two types of operations**: Default Operations and Lazy Operations.
 
 ### 1. Default Operations
 
@@ -66,19 +79,19 @@ This matches the reference behavior for arithmetic, comparisons, string operatio
 
 ### 2. Lazy Operations
 
-Some operations must control **whether** and **when** their arguments are evaluated. They implement branching, short-circuiting, or “apply a rule per item” semantics. For these **Lazy Operations**, the engine passes **raw sub-rules** and current data. The operator then evaluates only the sub-rules it actually needs.
+Some operations must control **whether** and **when** their arguments are evaluated. They implement branching, short-circuiting, or “apply a rule per item” semantics. For these **Lazy Operations**, the engine passes raw sub-rules and data. The operator then evaluates only the sub-rules it actually needs.
 
 **Groups and references:**
 
 - **Branching / boolean control** — `if`, `?:`, `and`, `or`, `var`
-  [Logic & boolean operations](https://jsonlogic.com/operations.html#logic-and-boolean-operations) • [Truthiness](https://jsonlogic.com/truthy.html)
+  [Logic & boolean operations](https://jsonlogic.com/operations.html#logic-and-boolean-operations)
 
 - **Enumerable operators** — `map`, `filter`, `reduce`, `all`, `none`, `some`
   [Array operations](https://jsonlogic.com/operations.html#array-operations)
 
 **How enumerable per-item evaluation works:**
 
-1. The first argument is a rule that returns the list of items — evaluated **once** to a Ruby array.
+1. The first argument is a rule that returns the list of items — evaluated once to a Ruby array.
 2. The second argument is the per-item rule — evaluated **for each item** with that item as the **current root**.
 3. For `reduce`, the current item is also available as `"current"`, and the running total as `"accumulator"`.
 
@@ -110,11 +123,9 @@ JsonLogic.apply(
 
 ### Why laziness matters?
 
-Lazy operations **prevent evaluation** of branches you do not need. If division by zero raised an error (hypothetically), lazy control would avoid it:
+Lazy operations  prevent evaluation of branches you do not need. If division by zero raised an error (hypothetically), lazy control would avoid it.
 
 ```ruby
-# "or" short-circuits: 1 is truthy, so the right side is NOT evaluated.
-# If the right side were evaluated eagerly, it would attempt 1/0 (error).
 JsonLogic.apply({ "or" => [1, { "/" => [1, 0] }] })
 # => 1
 ```
@@ -124,7 +135,7 @@ JsonLogic.apply({ "or" => [1, { "/" => [1, 0] }] })
 ## Supported Operations (Built‑in)
 
 
-Below is a list that mirrors the sections on [jsonlogic.com/operations.html](https://jsonlogic.com/operations.html) and shows what this gem (library) implements. From the reference page’s list, everything except `log` is implemented.
+Below is a list that mirrors the sections on [Json Logic Website Opeations](https://jsonlogic.com/operations.html) and shows what this gem implements.
 
 | Operator | Supported |
 |---|---:|
@@ -169,90 +180,90 @@ Below is a list that mirrors the sections on [jsonlogic.com/operations.html](htt
 
 ## Adding Operations
 
-Need a custom operation? It’s straightforward.
-
-### Quick — register a Proc or Lambda
-
-Register little anonymous functions, by passing a Proc or Lambda.
-
-```ruby
-JsonLogic.add_operation("times2") { |(value), _| value.to_i * 2 }
-```
-
-Once the function added, you can use it in your logic.
-
-```ruby
-JsonLogic.apply({ "times2" => [21] })
-# => 42
-```
-
-Is useful for rapid prototyping with minimal boilerplate;
-Later you can “promote” it into a full class or use additional features.
+Need a custom Operation? It’s straightforward. Start small with a Proc or Lambda. If needed – promote it to a Class.
 
 
-### 1) Pick the Operation type
-Choose one of:
-- **Default**
-```ruby
-class JsonLogic::Operations::StartsWith < JsonLogic::Operation; end
-```
-For anonymous functions:
-```ruby
-JsonLogic.add_operation("starts_with", lazy: false) do; end
-```
-- **Lazy**
-```ruby
-class JsonLogic::Operations::StartsWith < JsonLogic::LazyOperation; end
-```
-For anonymous functions:
-```ruby
-JsonLogic.add_operation("starts_with", lazy: true) do; end
-```
 
-See [§How](#how) for details.
-
-### 2) Enable JsonLogic Semantics (optional)
-Enable semantics to mirror JsonLogic’s comparison/truthiness in Ruby:
-
-```ruby
-using JsonLogic::Semantics
-```
-
+### 	Enable JsonLogic Semantics (optional)
+Enable semantics to mirror JsonLogic’s comparison/truthiness in Ruby.
 
 See [§JsonLogic Semantic](#jsonlogic-semantic) for details.
 
-### 3) Create an Operation and provide a machine name
 
-Operation methods use a consistent call shape.
+### Parameters
 
-- The first parameter is the **array of operator arguments**.
-- The second is the current **data**.
+Operator function use a consistent call shape:
+
+-   First parameter: **array of operator arguments** (you can destructure it).
+
+-   Second parameter: current **data**.
+```ruby
+->((string, prefix), data) { string.to_s.start_with?(prefix.to_s) }
+```
+
+### Proc / Lambda
+
+Pick the Operation type.
+
+[Default Operation](#1-default-operations) mode passes values.
+
+```ruby
+JsonLogic.add_operation("starts_with") do |(string_value, prefix_value), _data|
+  string_value.to_s.start_with?(prefix_value.to_s)
+end
+```
+[Lazy Operation](#2-lazy-operations) mode passes raw rules (you evaluate them):
+
+```ruby
+JsonLogic.add_operation("starts_with", lazy: true) do |(string_rule, prefix_rule), data|
+  string_value = JsonLogic.apply(string_rule, data)
+  prefix_value = JsonLogic.apply(prefix_rule, data)
+  string_value.to_s.start_with?(prefix_value.to_s)
+end
+```
+
+See [§How](https://github.com/tavrelkate/json-logic-rb?tab=readme-ov-file#how) for details.
+
+Use immediately:
+
+```ruby
+JsonLogic.apply({ "starts_with" => [ { "var" => "email" }, "admin@" ] })
+```
 
 
+### Class
 
-Thanks to Ruby’s destructuring, you can unpack the argument array right in the method signature.
+Pick the Operation type.
+
+It has the same call shape.
+
+[Default Operation](#1-default-operations)  – Inherit `JsonLogic::Operation`.
 
 ```ruby
 class JsonLogic::Operations::StartsWith < JsonLogic::Operation
   def self.name = "starts_with"
-  def call((str, prefix), _data)
-    # str, prefix are ALREADY evaluated to Ruby values
-    str.to_s.start_with?(prefix.to_s)
-  end
+  def call(string_value, prefix_value), _data) = string_value.to_s.start_with?(prefix_value.to_s)
 end
 ```
 
-### 4) Register the new operation
+[Lazy Operation](#2-lazy-operations)  – Inherit `JsonLogic::LazyOperation`.
+
+Register explicitly:
 
 ```ruby
 JsonLogic::Engine.default.registry.register(JsonLogic::Operations::StartsWith)
 ```
 
-After registration, use it in rules:
+Now, Class is ready to use.
 
-```json
-{ "starts_with": [ { "var": "email" }, "admin@" ] }
+```ruby
+JsonLogic.apply({ "starts_with" => [ { "var" => "email" }, "admin@" ] })
 ```
+
+
+
+
+
 
 
 
@@ -295,14 +306,14 @@ In Ruby, only `false` and `nil` are falsey. In JsonLogic empty strings and empty
 # => true
 ```
 
-While JsonLogic as was mentioned before has it's own truthiness:
+While JsonLogic as was mentioned before has it's own truthiness.
 
 **In Ruby (with JsonLogic Semantic):**
 
 ```ruby
-include JsonLogic::Semantics
+using JsonLogic::Semantics
 
-truthy?([])
+!![]
 # => false
 ```
 
@@ -343,9 +354,10 @@ ruby script/compliance.rb spec/tmp/tests.json
 
 ## Security
 
-- Rules are **data**, not code; no Ruby eval.
-- Operations are **pure** (no IO, no network, no shell).
-- Rules have **no write** access to anything.
+- RULES ARE DATA; NO RUBY EVAL;
+- OPERATIONS ARE PURE; NO IO, NO NETWORK; NO SHELL;
+- RULES HAVE NO WRITE ACCESS TO ANYTHING;
+
 
 ## License
 
