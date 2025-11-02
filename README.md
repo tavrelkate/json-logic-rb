@@ -125,6 +125,7 @@ JsonLogic.apply(
 ### Why laziness matters?
 
 Lazy operations  prevent evaluation of branches you do not need.
+
 If hypothetically division by zero raises an error, lazy control would avoid it.
 
 ```ruby
