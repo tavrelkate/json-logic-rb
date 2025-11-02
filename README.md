@@ -127,7 +127,6 @@ JsonLogic.apply(
 Lazy operations  prevent evaluation of branches you do not need.
 
 If hypothetically division by zero raises an error, lazy control would avoid it.
-
 ```ruby
 JsonLogic.apply({ "or" => [1, { "/" => [1, 0] }] })
 # => 1
@@ -236,9 +235,7 @@ JsonLogic.apply({ "starts_with" => [ { "var" => "email" }, "admin@" ] })
 
 ### Class
 
-Pick the Operation type.
-
-It has the same call shape.
+Pick the Operation type. It has the same call shape.
 
 [Default Operation](#1-default-operations)  – Inherit `JsonLogic::Operation`.
 
