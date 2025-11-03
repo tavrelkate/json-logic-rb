@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.1.4] - 2025-10-31
+- Fix Json Logic semantic to follow official specification (for all core Ruby Data structures).
+- False vs NULL comparison.
+
 ## [0.1.3] - 2025-10-31
 - Update Json Logic semantic to follow official specification (for all core Ruby Data structures).
 
