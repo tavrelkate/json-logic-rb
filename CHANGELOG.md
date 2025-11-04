@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.1.4] - 2025-11-03
+- [fix] Align JsonLogic semantics with the official spec across core Ruby types; correct false vs null equality.
+
 ## [0.1.3] - 2025-10-31
 - Update Json Logic semantic to follow official specification (for all core Ruby Data structures).
 

@@ -21,13 +21,20 @@ module JsonLogic
       end
     end
 
+    def to_primitive(v)
+      case v
+      when Array then v.join(',')
+      else v
+      end
+    end
+
     def num(v)
       case v
       when Numeric    then v.to_f
       when TrueClass  then 1.0
       when FalseClass then 0.0
       when NilClass   then 0.0
-      when Array      then num(v.join(','))
+      when Array      then num(to_primitive(v))
       when String
         s = v.strip
         return 0.0 if s.empty?
@@ -44,23 +51,36 @@ module JsonLogic
     def eq(a, b)
       if a.class == b.class
         if a.is_a?(Numeric)
-          return false if a.to_f.nan? || b.to_f.nan?
-          return a.to_f == b.to_f
+          ax = a.to_f; bx = b.to_f
+          return false if ax.nan? || bx.nan?
+          return ax == bx
         else
           return a.eql?(b)
         end
       end
 
-      if a.is_a?(TrueClass) || a.is_a?(FalseClass) || b.is_a?(TrueClass) || b.is_a?(FalseClass)
-        na = num(a); nb = num(b)
-        return false if na.nan? || nb.nan?
-        return na == nb
+      if a.nil? && b.nil?
+        return true
+      elsif a.nil? || b.nil?
+        return false
+      end
+
+      if a.is_a?(TrueClass) || a.is_a?(FalseClass)
+        return eq(num(a), b)
+      end
+      if b.is_a?(TrueClass) || b.is_a?(FalseClass)
+        return eq(a, num(b))
       end
 
       if (a.is_a?(String) && b.is_a?(Numeric)) || (a.is_a?(Numeric) && b.is_a?(String))
-        na = num(a); nb = num(b)
-        return false if na.nan? || nb.nan?
-        return na == nb
+        ax = num(a); bx = num(b)
+        return false if ax.nan? || bx.nan?
+        return ax == bx
+      end
+
+      if (a.is_a?(Array) && (b.is_a?(String) || b.is_a?(Numeric))) ||
+         (b.is_a?(Array) && (a.is_a?(String) || a.is_a?(Numeric)))
+        return eq(to_primitive(a), to_primitive(b))
       end
 
       false
