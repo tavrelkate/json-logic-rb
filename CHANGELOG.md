@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.1.5] - 2025-12-08
+- [fix] Update Operations to support "each_cons" inside comparisons.
+
 ## [0.1.4] - 2025-11-03
 - [fix] Align JsonLogic semantics with the official spec across core Ruby types; correct false vs null equality.
 
