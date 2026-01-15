@@ -18,49 +18,42 @@ module JsonLogic
 
     attr_reader :registry
 
-    def evaluate(expression, data = nil)
-      apply(expression, freshen(data))
+    def evaluate(rule, data = nil)
+      apply(rule, data.deep_dup.with_indifferent_access)
     end
 
     private
 
-    def freshen(data)
-      case data
-      when Hash
-        data.deep_dup.with_indifferent_access
+    def apply(rule, data)
+      case rule
+      when Numeric,
+           String,
+           TrueClass,
+           FalseClass,
+           NilClass
+        rule
       when Array
-        data.map { |item| freshen(item) }
-      when nil
-        {}.with_indifferent_access
-      else
-        data.duplicable? ? data.dup : data
-      end
-    end
-
-    def apply(expression, data)
-      case expression
-      when Numeric, String, TrueClass, FalseClass, NilClass
-        expression
-      when Array
-        expression.map { |item| apply(item, data) }
+        rule.map { |r| apply(r, data) }
       when Hash
-        return expression if expression.empty?
+        name, raw_args = rule.first
+        op_class = @registry.fetch(name)
+        raise ArgumentError, "unknown operation: #{name}" unless op_class
 
-        name, input = expression.first
-        operation = @registry.fetch(name)
-        
-        raise ArgumentError, "unknown operation: #{name}" unless operation
+        args =
+          case raw_args
+          when nil   then []
+          when Array then raw_args
+          else            [raw_args]
+          end
 
-        args = Array(input)
-
-        if operation.values_only?
-          values = args.map { |arg| apply(arg, data) }
-          operation.new.call(values, data)
+        if op_class.values_only?
+          values = args.map { |a| apply(a, data) }
+          op_class.new.call(values, data)
         else
-          operation.new.call(args, data)
+          op_class.new.call(args, data)
         end
       else
-        expression
+        rule
       end
     end
   end
