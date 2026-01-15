@@ -20,7 +20,7 @@ module JsonLogic
     attr_reader :registry
 
     def evaluate(rule, data = nil)
-      apply(rule, data.deep_dup.with_indifferent_access)
+      apply rule, data.deep_dup.then { |d| d.respond_to?(:with_indifferent_access) ? d.with_indifferent_access : d }
     end
 
     private
