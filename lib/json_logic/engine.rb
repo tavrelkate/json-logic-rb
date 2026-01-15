@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'semantics'
-require 'active_support'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'active_support/core_ext/object/deep_dup'
 
