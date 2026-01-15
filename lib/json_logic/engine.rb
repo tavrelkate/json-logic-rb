@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative 'semantics'
+require 'active_support/core_ext/hash/indifferent_access'
+require 'active_support/core_ext/object/deep_dup'
 
 module JsonLogic
   class Engine
@@ -16,38 +18,49 @@ module JsonLogic
 
     attr_reader :registry
 
-    def evaluate(rule, data = nil)
-      data ||= {}
+    def evaluate(expression, data = nil)
+      apply(expression, freshen(data))
+    end
 
-      case rule
-      when Numeric,
-           String,
-           TrueClass,
-           FalseClass,
-           NilClass
-        rule
-      when Array
-        rule.map { |r| evaluate(r, data) }
+    private
+
+    def freshen(data)
+      case data
       when Hash
-        name, raw_args = rule.first
-        op_class = @registry.fetch(name)
-        raise ArgumentError, "unknown operation: #{name}" unless op_class
+        data.deep_dup.with_indifferent_access
+      when Array
+        data.map { |item| freshen(item) }
+      when nil
+        {}.with_indifferent_access
+      else
+        data.duplicable? ? data.dup : data
+      end
+    end
 
-        args =
-          case raw_args
-          when nil   then []
-          when Array then raw_args
-          else            [raw_args]
-          end
+    def apply(expression, data)
+      case expression
+      when Numeric, String, TrueClass, FalseClass, NilClass
+        expression
+      when Array
+        expression.map { |item| apply(item, data) }
+      when Hash
+        return expression if expression.empty?
 
-        if op_class.values_only?
-          values = args.map { |a| evaluate(a, data) }
-          op_class.new.call(values, data)
+        name, input = expression.first
+        operation = @registry.fetch(name)
+        
+        raise ArgumentError, "unknown operation: #{name}" unless operation
+
+        args = Array(input)
+
+        if operation.values_only?
+          values = args.map { |arg| apply(arg, data) }
+          operation.new.call(values, data)
         else
-          op_class.new.call(args, data)
+          operation.new.call(args, data)
         end
       else
-        rule
+        expression
       end
     end
   end
