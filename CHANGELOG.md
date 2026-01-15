@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.6] - 2025-12-08
+- Native Indifferent Access: Implemented zero-dependency key stringification.
+- Data Protection: Recursive deep-copying to ensure input data remains untouched.
+- Added active_support dependency.
 
 ## [0.1.5] - 2025-12-08
 - [fix] Update Operations to support "each_cons" inside comparisons.
