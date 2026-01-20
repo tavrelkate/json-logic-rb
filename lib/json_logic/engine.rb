@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative 'semantics'
+require 'active_support/core_ext/hash/indifferent_access'
+require 'active_support/core_ext/object/deep_dup'
 
 module JsonLogic
   class Engine
@@ -17,8 +19,12 @@ module JsonLogic
     attr_reader :registry
 
     def evaluate(rule, data = nil)
-      data ||= {}
+      apply rule, data.deep_dup.then { |d| d.respond_to?(:with_indifferent_access) ? d.with_indifferent_access : d }
+    end
 
+    private
+
+    def apply(rule, data)
       case rule
       when Numeric,
            String,
@@ -27,7 +33,7 @@ module JsonLogic
            NilClass
         rule
       when Array
-        rule.map { |r| evaluate(r, data) }
+        rule.map { |r| apply(r, data) }
       when Hash
         name, raw_args = rule.first
         op_class = @registry.fetch(name)
@@ -41,7 +47,7 @@ module JsonLogic
           end
 
         if op_class.values_only?
-          values = args.map { |a| evaluate(a, data) }
+          values = args.map { |a| apply(a, data) }
           op_class.new.call(values, data)
         else
           op_class.new.call(args, data)

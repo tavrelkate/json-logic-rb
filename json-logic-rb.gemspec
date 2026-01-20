@@ -22,6 +22,8 @@ Gem::Specification.new do |s|
     "changelog_uri"     => "https://github.com/tavrelkate/json-logic-rb/blob/main/CHANGELOG.md"
   }
 
+  s.add_dependency "activesupport"
+
   s.files = Dir[
     "lib/**/*",
     "script/**/*",

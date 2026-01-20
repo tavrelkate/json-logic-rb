@@ -30,13 +30,14 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
 
       - name: Run compliance
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p tmp
-          ruby -Ilib script/compliance.rb spec/tmp/tests.json \
+          bundle exec ruby -Ilib script/compliance.rb spec/tmp/tests.json \
             2>&1 | tee tmp/compliance-${{ matrix.ruby }}.log
 
       - name: Step summary
