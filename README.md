@@ -366,5 +366,5 @@ MIT — see [LICENSE](LICENSE).
 
 ## Authors
 
-- [Valeriya Petrova](https://github.com/piatrova-valeriya1999)
+- [Valeriya Petrova](https://github.com/valeryia-piatrova)
 - [Tavrel Kate](https://github.com/tavrelkate)
