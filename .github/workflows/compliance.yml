@@ -14,8 +14,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  run_compliance:
-    name: Compliance — Ruby ${{ matrix.ruby }} · ${{ matrix.os }}
+  compliance_v1:
+    name: compliance_v1 — Ruby ${{ matrix.ruby }} · ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     strategy:
@@ -36,33 +36,46 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p tmp
-          status=0
           ruby -Ilib script/compliance.rb compliance_v1 \
-            2>&1 | tee tmp/compliance-v1-${{ matrix.ruby }}.log || status=1
-          ruby -Ilib script/compliance.rb compliance_v2 \
-            2>&1 | tee tmp/compliance-v2-${{ matrix.ruby }}.log || status=1
-          exit $status
-
-      - name: Step summary
-        if: always()
-        shell: bash
-        run: |
-          v1_result="missing log"
-          v2_result="missing log"
-          [ -f tmp/compliance-v1-${{ matrix.ruby }}.log ] && v1_result="$(tail -n 1 tmp/compliance-v1-${{ matrix.ruby }}.log)"
-          [ -f tmp/compliance-v2-${{ matrix.ruby }}.log ] && v2_result="$(tail -n 1 tmp/compliance-v2-${{ matrix.ruby }}.log)"
-          {
-            echo "### JSON Logic Compliance"
-            echo "- Ruby: \`${{ matrix.ruby }}\`"
-            echo "- v1: \`$v1_result\`"
-            echo "- v2: \`$v2_result\`"
-          } >> "$GITHUB_STEP_SUMMARY"
+            2>&1 | tee tmp/compliance-v1-${{ matrix.ruby }}.log
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: compliance-${{ matrix.ruby }}
+          name: compliance-v1-${{ matrix.ruby }}
           path: |
             tmp/compliance-v1-${{ matrix.ruby }}.log
+          if-no-files-found: ignore
+
+  compliance_v2:
+    name: compliance_v2 — Ruby ${{ matrix.ruby }} · ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        ruby: ["3.4", "3.3", "3.2", "3.1", "3.0"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+
+      - name: Run compliance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p tmp
+          ruby -Ilib script/compliance.rb compliance_v2 \
+            2>&1 | tee tmp/compliance-v2-${{ matrix.ruby }}.log
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compliance-v2-${{ matrix.ruby }}
+          path: |
             tmp/compliance-v2-${{ matrix.ruby }}.log
           if-no-files-found: ignore
