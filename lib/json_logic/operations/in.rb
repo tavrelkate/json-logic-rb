@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+using JsonLogic::Semantics
+
 class JsonLogic::Operations::In < JsonLogic::Operation
   def self.name = "in"
 

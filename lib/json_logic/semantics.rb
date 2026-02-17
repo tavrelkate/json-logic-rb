@@ -34,7 +34,7 @@ module JsonLogic
       when TrueClass  then 1.0
       when FalseClass then 0.0
       when NilClass   then 0.0
-      when Array      then num(to_primitive(v))
+      when Array      then Float::NAN
       when String
         s = v.strip
         return 0.0 if s.empty?
@@ -49,41 +49,14 @@ module JsonLogic
     end
 
     def eq(a, b)
-      if a.class == b.class
-        if a.is_a?(Numeric)
-          ax = a.to_f; bx = b.to_f
-          return false if ax.nan? || bx.nan?
-          return ax == bx
-        else
-          return a.eql?(b)
-        end
-      end
+      return a.eql?(b) if a.is_a?(String) && b.is_a?(String)
+      raise FloatDomainError, "NaN" if a.is_a?(Array) || b.is_a?(Array) || a.is_a?(Hash) || b.is_a?(Hash)
 
-      if a.nil? && b.nil?
-        return true
-      elsif a.nil? || b.nil?
-        return false
-      end
+      ax = num(a)
+      bx = num(b)
+      raise FloatDomainError, "NaN" if ax.nan? || bx.nan?
 
-      if a.is_a?(TrueClass) || a.is_a?(FalseClass)
-        return eq(num(a), b)
-      end
-      if b.is_a?(TrueClass) || b.is_a?(FalseClass)
-        return eq(a, num(b))
-      end
-
-      if (a.is_a?(String) && b.is_a?(Numeric)) || (a.is_a?(Numeric) && b.is_a?(String))
-        ax = num(a); bx = num(b)
-        return false if ax.nan? || bx.nan?
-        return ax == bx
-      end
-
-      if (a.is_a?(Array) && (b.is_a?(String) || b.is_a?(Numeric))) ||
-         (b.is_a?(Array) && (a.is_a?(String) || a.is_a?(Numeric)))
-        return eq(to_primitive(a), to_primitive(b))
-      end
-
-      false
+      ax == bx
     end
 
     def cmp(a, b)
@@ -94,6 +67,13 @@ module JsonLogic
         return nil if x.nan? || y.nan?
         x <=> y
       end
+    end
+
+    def cmp!(a, b)
+      c = cmp(a, b)
+      raise FloatDomainError, "NaN" if c.nil?
+
+      c
     end
 
     refine Object do
@@ -108,11 +88,100 @@ module JsonLogic
 
     [String, Integer, Float, NilClass, Array, TrueClass, FalseClass].each do |klass|
       refine klass do
+        def to_f
+          case self
+          when Integer, Float
+            self * 1.0
+          when TrueClass
+            1.0
+          when FalseClass, NilClass
+            0.0
+          when String
+            s = strip
+            return 0.0 if s.empty?
+            Float(s)
+          when Array
+            raise FloatDomainError, "NaN"
+          else
+            raise FloatDomainError, "NaN"
+          end
+        rescue ArgumentError
+          raise FloatDomainError, "NaN"
+        end
+
         def ==(other) = JsonLogic::Semantics.eq(self, other)
-        def >(other)  = (c = JsonLogic::Semantics.cmp(self, other)) && c == 1
-        def >=(other) = (c = JsonLogic::Semantics.cmp(self, other)) && (c == 1 || c == 0)
-        def <(other)  = (c = JsonLogic::Semantics.cmp(self, other)) && c == -1
-        def <=(other) = (c = JsonLogic::Semantics.cmp(self, other)) && (c == -1 || c == 0)
+        def >(other)
+          case JsonLogic::Semantics.cmp!(self, other)
+          when 1 then true
+          else false
+          end
+        end
+
+        def >=(other)
+          case JsonLogic::Semantics.cmp!(self, other)
+          when 1, 0 then true
+          else false
+          end
+        end
+
+        def <(other)
+          case JsonLogic::Semantics.cmp!(self, other)
+          when -1 then true
+          else false
+          end
+        end
+
+        def <=(other)
+          case JsonLogic::Semantics.cmp!(self, other)
+          when -1, 0 then true
+          else false
+          end
+        end
+      end
+    end
+
+    refine Hash do
+      def to_f
+        raise FloatDomainError, "NaN"
+      end
+
+      def ==(other)
+        return eql?(other) if other.is_a?(Hash)
+        JsonLogic::Semantics.eq(self, other)
+      end
+
+      def >(other)
+        case JsonLogic::Semantics.cmp!(self, other)
+        when 1 then true
+        else false
+        end
+      end
+
+      def >=(other)
+        case JsonLogic::Semantics.cmp!(self, other)
+        when 1, 0 then true
+        else false
+        end
+      end
+
+      def <(other)
+        case JsonLogic::Semantics.cmp!(self, other)
+        when -1 then true
+        else false
+        end
+      end
+
+      def <=(other)
+        case JsonLogic::Semantics.cmp!(self, other)
+        when -1, 0 then true
+        else false
+        end
+      end
+    end
+
+    refine Object do
+      def to_f
+        raise FloatDomainError, "NaN"
       end
     end
   end

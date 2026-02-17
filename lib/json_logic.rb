@@ -2,6 +2,9 @@
 
 require_relative 'json_logic/version'
 require_relative 'json_logic/semantics'
+require_relative 'json_logic/error'
+require_relative 'json_logic/ext/array'
+require_relative 'json_logic/json'
 require_relative 'json_logic/operation'
 require_relative 'json_logic/lazy_operation'
 require_relative 'json_logic/enumerable_operation'
@@ -34,7 +37,12 @@ module JsonLogic
 
   class << self
     def apply(rule, data = nil)
+      stack = (Thread.current[:json_logic_scope_stack] ||= [])
+      stack << data
       Engine.default.evaluate(rule, data)
+    ensure
+      stack.pop
+      Thread.current[:json_logic_scope_stack] = nil if stack.empty?
     end
 
     def add_operation(name, lazy: false, &block)

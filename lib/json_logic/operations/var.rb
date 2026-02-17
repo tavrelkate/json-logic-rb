@@ -1,30 +1,32 @@
 # frozen_string_literal: true
 
+using JsonLogic::Semantics
+
 class JsonLogic::Operations::Var < JsonLogic::Operation
-  def self.name = "var";
+  def self.name = "var"
   def self.values_only? = false
 
-  def call((path_rule, fallback_rule), data)
-    path = JsonLogic.apply(path_rule, data)
-    return data if path == ""
-    val = dig(data, path)
-    return val unless val.nil?
-    return nil if fallback_rule.nil?
-    JsonLogic.apply(fallback_rule, data)
-  end
+  def call(args, data)
+    json = JsonLogic::Json.new(data)
 
-  def dig(obj, path)
-    return nil if obj.nil?
-    cur = obj
-    path.to_s.split(".").each do |k|
-      if cur.is_a?(Array) && k =~ /\A\d+\z/
-        cur = cur[k.to_i]
-      elsif cur.is_a?(Hash)
-        cur = cur[k] || cur[k.to_s] || cur[k.to_sym]
-      else
-        return nil
-      end
+    if args.is_a?(Array)
+      path_rule = args[0]
+      fallback_rule = args[1]
+    else
+      path_rule = args
+      fallback_rule = nil
     end
-    cur
+
+    path = JsonLogic.apply(path_rule, data)
+    if path.is_a?(String) && path.empty?
+      return data[""] if data.is_a?(Hash) && data.key?("")
+      return data
+    end
+
+    return json.dig(path, split_dots: true) if json.exists?(path, split_dots: true)
+
+    return nil if fallback_rule.nil?
+
+    JsonLogic.apply(fallback_rule, data)
   end
 end
