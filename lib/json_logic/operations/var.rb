@@ -7,7 +7,7 @@ class JsonLogic::Operations::Var < JsonLogic::Operation
   def self.values_only? = false
 
   def call(args, data)
-    json = JsonLogic::Json.new(data)
+    json = JsonLogic::Tree.new(data)
 
     if args.is_a?(Array)
       path_rule = args[0]

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module JsonLogic
-  class Json
+  class Tree
     INDEX_PATTERN = /\A-?\d+\z/
 
     def initialize(data)

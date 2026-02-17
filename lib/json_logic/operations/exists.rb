@@ -6,7 +6,7 @@ class JsonLogic::Operations::Exists < JsonLogic::Operation
   def self.name = "exists"
   def self.values_only? = false
 
-  def call(args, data) = JsonLogic::Json.new(data).exists?(normalize_path(args, data), split_dots: false)
+  def call(args, data) = JsonLogic::Tree.new(data).exists?(normalize_path(args, data), split_dots: false)
 
   private
 

@@ -11,7 +11,7 @@ class JsonLogic::Operations::Val < JsonLogic::Operation
     return root_value(path, data) if root_path?(path)
 
     base, segments = resolve_base_and_segments(path, data)
-    JsonLogic::Json.new(base).dig(segments, split_dots: false)
+    JsonLogic::Tree.new(base).dig(segments, split_dots: false)
   end
 
   private
