@@ -33,19 +33,19 @@ module JsonLogic
           return rule.transform_values { |value| evaluate(value, data) }
         end
 
-        args = op_class.values_only? ? Array.wrap([evaluate(raw_args, data)]) : raw_args
+        args = op_class.values_only? ? Array.wrap(evaluate(raw_args, data)) : raw_args
         begin
           result = op_class.new.call(args, data)
           raise JsonLogic::NaNError.new if result.is_a?(Float) && (result.nan? || result.infinite?)
           result
-        rescue JsonLogic::LogicError
+        rescue JsonLogic::Error
           raise
         rescue ArgumentError, IndexError, TypeError, NoMethodError
           raise JsonLogic::InvalidArgumentsError.new
         rescue ZeroDivisionError, FloatDomainError
           raise JsonLogic::NaNError.new
         rescue StandardError => e
-          raise JsonLogic::LogicError.new("type" => e.message.to_s)
+          raise JsonLogic::Error.new(e.message.to_s)
         end
       else
         rule

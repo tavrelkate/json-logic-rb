@@ -2,7 +2,10 @@
 
 require_relative 'json_logic/version'
 require_relative 'json_logic/semantics'
-require_relative 'json_logic/error'
+require_relative 'json_logic/errors/error'
+require_relative 'json_logic/errors/logic_error'
+require_relative 'json_logic/errors/invalid_arguments_error'
+require_relative 'json_logic/errors/nan_error'
 require_relative 'json_logic/ext/array'
 require_relative 'json_logic/json'
 require_relative 'json_logic/operation'

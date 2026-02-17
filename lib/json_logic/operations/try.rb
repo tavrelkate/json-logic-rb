@@ -5,35 +5,31 @@ using JsonLogic::Semantics
 class JsonLogic::Operations::Try < JsonLogic::LazyOperation
   def self.name = "try"
 
-  def call(args, data)
-    args = args.is_a?(Array) ? args : [args]
-    last_error = nil
-    context = data
+  def call(arguments, data)
+    arguments = Array.wrap(arguments)
+    raise JsonLogic::InvalidArgumentsError.new if arguments.empty?
 
-    args.each do |expr|
+    state = { data: data, error: nil }
+
+    arguments.each do |expression|
       begin
-        value = JsonLogic.apply(expr, context)
-        if value.is_a?(Float) && value.nan?
-          last_error = JsonLogic::NaNError.new
-          context = last_error.payload
-          next
-        end
-        return value
-      rescue JsonLogic::LogicError => e
-        last_error = e
-        context = e.payload
+        value = JsonLogic.apply(expression, state[:data])
+        return value unless value.is_a?(Float) && value.nan?
+
+        state[:error] = JsonLogic::NaNError.new
+      rescue JsonLogic::Error => error
+        state[:error] = error
       rescue ArgumentError, IndexError, TypeError, NoMethodError
-        last_error = JsonLogic::InvalidArgumentsError.new
-        context = last_error.payload
+        state[:error] = JsonLogic::InvalidArgumentsError.new
       rescue ZeroDivisionError, FloatDomainError
-        last_error = JsonLogic::NaNError.new
-        context = last_error.payload
-      rescue StandardError => e
-        last_error = JsonLogic::LogicError.new(e.message)
-        context = last_error.payload
+        state[:error] = JsonLogic::NaNError.new
+      rescue StandardError => error
+        state[:error] = JsonLogic::Error.new(error.message)
       end
+
+      state[:data] = state[:error].payload
     end
 
-    raise(last_error || JsonLogic::InvalidArgumentsError.new)
+    raise state[:error]
   end
 end

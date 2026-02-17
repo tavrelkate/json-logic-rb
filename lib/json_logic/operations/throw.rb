@@ -6,7 +6,7 @@ class JsonLogic::Operations::Throw < JsonLogic::Operation
   def self.name = "throw"
 
   def call((value), _data)
-    payload = value.is_a?(Hash) ? value : { "type" => value.to_s }
-    raise JsonLogic::LogicError, payload
+    type = value.is_a?(Hash) ? (value["type"] || value[:type]).to_s : value.to_s
+    raise JsonLogic::Error, type
   end
 end
