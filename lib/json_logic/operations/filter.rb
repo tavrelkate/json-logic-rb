@@ -6,13 +6,18 @@ class JsonLogic::Operations::Filter < JsonLogic::EnumerableOperation
   def self.name = "filter"
 
   def call(args, data)
+    raise JsonLogic::InvalidArgumentsError.new if args.is_a?(Array) && args.size >= 2 && args[1].nil?
     raise JsonLogic::InvalidArgumentsError.new unless args.is_a?(Array) && args.size >= 2
-    raise JsonLogic::InvalidArgumentsError.new if args[0].nil? || args[1].nil?
+    raise JsonLogic::InvalidArgumentsError.new if args[0].nil?
 
-    items, rule_applied_to_each_item = resolve_items_and_per_item_rule(args, data, nil_items_invalid: false)
+    items_rule, rule = args
+    items = Array(JsonLogic.apply(items_rule, data))
 
-    items.each_with_index.filter do |item, idx|
-      !!JsonLogic.apply(rule_applied_to_each_item, scoped_item_data(item, data, idx))
-    end.map(&:first)
+    return [] if rule.nil?
+
+    items.each_with_index.each_with_object([]) do |(item, index), filtered|
+      value = JsonLogic.apply(rule, JsonLogic::Scope.new(item, data, index))
+      filtered << item if value.to_bool
+    end
   end
 end
