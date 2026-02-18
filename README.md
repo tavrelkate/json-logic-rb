@@ -2,11 +2,20 @@
 
 
 
+
+
+
+
+
+
+
 # json-logic-rb
 
-Ruby implementation of [JsonLogic](https://jsonlogic.com/) — simple and extensible. Ships with a compliance runner for the official test suite.
+Ruby implementation of [JsonLogic](https://jsonlogic.com/) — elegant and extensible. Full compliance with both core and community-extended specifications.
 
-<a  href="#"><img  alt="build"  src="https://img.shields.io/github/actions/workflow/status/your-org/json-logic-rb/ci-complience?branch=main">  <a  href="https://rubygems.org/gems/json-logic-rb"><img  alt="rubygems"  src="https://img.shields.io/gem/v/json-logic-rb"></a>  <a  href="LICENSE"><img  alt="license"  src="https://img.shields.io/badge/license-MIT-informational"></a>
+[![jsonlogic core][src-core]](https://jsonlogic.com/tests.json) [![jsonlogic community][src-community]](https://github.com/json-logic/compat-tables/tree/main/suites) <a href="https://rubygems.org/gems/json-logic-rb"><img alt="rubygems" src="https://img.shields.io/gem/v/json-logic-rb"></a> <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-informational"></a>
+
+[![core ci](https://img.shields.io/github/actions/workflow/status/tavrelkate/json-logic-rb/compliance.yml?branch=main&label=core%20ci)](https://github.com/tavrelkate/json-logic-rb/actions/workflows/compliance.yml?query=branch%3Amain) [![extra ci](https://img.shields.io/github/actions/workflow/status/tavrelkate/json-logic-rb/compliance.yml?branch=main&label=extra%20ci)](https://github.com/tavrelkate/json-logic-rb/actions/workflows/compliance.yml?query=branch%3Amain)
 
 ## Table of Contents
 - [What](#what)
@@ -15,10 +24,18 @@ Ruby implementation of [JsonLogic](https://jsonlogic.com/) — simple and extens
 - [How](#how)
   - [1. Default Operations](#1-default-operations)
   - [2. Lazy Operations](#2-lazy-operations)
+- [Why laziness matters?](#why-laziness-matters)
+- [Compliance and tests](#compliance-and-tests)
+  - [Script](#script)
 - [Supported Operations (Built‑in)](#supported-operations-built-in)
 - [Adding Operations](#adding-operations)
+  - [Enable JsonLogic Semantics (optional)](#enable-jsonlogic-semantics-optional)
+  - [Parameters](#parameters)
+  - [Proc / Lambda](#proc--lambda)
+  - [Class](#class)
 - [JsonLogic Semantic](#jsonlogic-semantic)
-- [Compliance and tests](#compliance-and-tests)
+  - [Comparisons](#comparisons)
+  - [Truthiness](#truthiness)
 - [Security](#security)
 - [License](#license)
 - [Authors](#authors)
@@ -59,7 +76,12 @@ JsonLogic.apply(rule)
 With data:
 
 ```ruby
-JsonLogic.apply({ "var" => "user.age" }, { "user" => { "age" => 42 } })
+require 'json_logic'
+
+rule = { "var" => "user.age" }
+data = { "user" => { "age" => 42 } }
+
+JsonLogic.apply(rule, data)
 # => 42
 ```
 
@@ -76,7 +98,7 @@ This matches the reference behavior for arithmetic, comparisons, string operatio
 
 - [Numeric operations](https://jsonlogic.com/operations.html#numeric-operations)
 - [String operations](https://jsonlogic.com/operations.html#string-operations)
-- [Array operations](https://jsonlogic.com/operations.html#array-operations) — simple transforms like `merge`, membership `in`.
+- [Array operations](https://jsonlogic.com/operations.html#array-operations) — simple transform like `merge`.
 
 ### 2. Lazy Operations
 
@@ -84,17 +106,9 @@ Some operations must control whether and when their arguments are evaluated. The
 
 **Groups and references:**
 
-- **Branching / boolean control** — `if`, `?:`, `and`, `or`, `var`
-  [Logic & boolean operations](https://jsonlogic.com/operations.html#logic-and-boolean-operations)
-
-- **Enumerable operators** — `map`, `filter`, `reduce`, `all`, `none`, `some`
-  [Array operations](https://jsonlogic.com/operations.html#array-operations)
-
-**How enumerable per-item evaluation works:**
-
-1. The first argument is a rule that returns the list of items — evaluated once to a Ruby array.
-2. The second argument is the per-item rule — evaluated for each item with that item as the current root.
-3. For `reduce`, the current item is also available as `"current"`, and the running total as `"accumulator"`.
+- [Logic and Boolean Operations](https://jsonlogic.com/operations.html#logic-and-boolean-operations) — short-circuit/branching like `or`.
+- [Comparison operations](https://jsonlogic.com/operations.html#logic-and-boolean-operations) — equality/ordering like `==`.
+- [Array operations](https://jsonlogic.com/operations.html#array-operations) — enumerable evaluation like `map`.
 
 
 **Example #1**
@@ -108,23 +122,9 @@ JsonLogic.apply(
 # => [2, 3]
 ```
 
-**Example #2**
-
-```ruby
-# reduce: sum using "current" and "accumulator"
-JsonLogic.apply(
-  { "reduce" => [
-      { "var" => "ints" },
-      { "+" => [ { "var" => "accumulator" }, { "var" => "current" } ] }, 0 ]
-  },
-  { "ints" => [1,2,3,4] }
-)
-# => 10.0
-```
-
 ### Why laziness matters?
 
-Lazy operations  prevent evaluation of branches you do not need.
+Lazy operations prevent evaluation of branches you do not need.
 
 If hypothetically division by zero raises an error, lazy control would avoid it.
 ```ruby
@@ -134,51 +134,114 @@ JsonLogic.apply({ "or" => [1, { "/" => [1, 0] }] })
 
 > In this gem division returns nil on divide‑by‑zero, but this example show why lazy evaluation is required by the spec: branching and boolean operators must not evaluate unused branches.
 
+
+
+
+
+
+## Compliance and tests
+
+The JsonLogic specification provides two things: the operations themselves (their names and descriptions) and the test suites — concrete inputs with expected outputs that validate the implementation. The specification come in two variants:
+- [![jsonlogic core][src-core]](https://jsonlogic.com/tests.json)  — [original JsonLogic website](https://jsonlogic.com/tests.json);
+- [![jsonlogic community][src-community]](https://github.com/json-logic/compat-tables/tree/main/suites) — [extensions built on top of the core](https://github.com/json-logic/compat-tables/tree/main/suites);
+
+ The "extra"  exists because "core" hasn't changed in years — and that’s fine, "core"  is a solid, finished foundation. Think of it as v1, while "extra" is the v2+ evolution as there are no visible plans to change the original.
+
+### Script
+
+Download test suite v1:
+
+```bash
+mkdir -p spec/tmp/v1
+curl -L https://jsonlogic.com/tests.json -o spec/tmp/v1/tests.json
+```
+
+Download test suite v2:
+
+```bash
+mkdir -p spec/tmp/v2
+git clone https://github.com/json-logic/compat-tables.git /tmp/compat-tables
+ruby script/build_tests_json.rb /tmp/compat-tables/suites spec/tmp/v2/tests.json
+```
+
+Run by version:
+
+```bash
+ruby script/compliance.rb -v 1
+ruby script/compliance.rb -v 2
+```
+
+Run by file path:
+
+```bash
+ruby script/compliance.rb -f spec/tmp/v2/tests.json
+```
+
+
 ## Supported Operations (Built‑in)
 
+Don’t expect JsonLogic to include every specialized operation. It’s intentionally small and not a programming language. It will never do everything.
 
-Below is a list that mirrors the sections on [Json Logic Website Opeations](https://jsonlogic.com/operations.html) and shows what this gem implements.
+You can add custom operations yourself — check out  [§Adding Operations](https://www.google.com/search?q=%23adding-operations)— or consider if the logic can be expressed with what’s already there.
 
-| Operator | Supported |
-|---|---:|
-|  `var`  | ✅ |
-|  `missing`  | ✅ |
-|  `missing_some`  | ✅ |
-|[Logic and Boolean Operations](https://jsonlogic.com/operations.html#logic-and-boolean-operations])
-|  `if`  | ✅ |
-|  `==`  | ✅ |
-|  `===`  | ✅ |
-|  `!=`  | ✅ |
-|  `!==`  | ✅ |
-|  `!`  | ✅ |
-|  `!!`  | ✅ |
-|  `or`  | ✅ |
-|  `and`  | ✅ |
-|  `?:`  | ✅ |
-|[Numeric Operations](https://jsonlogic.com/operations.html#numeric-operations)|
-|  `map`  | ✅ |
-|  `reduce`  | ✅ |
-|  `filter`  | ✅ |
-|  `all`  | ✅ |
-|  `none`  | ✅ |
-|  `some`  | ✅ |
-|  `merge`  | ✅ |
-|  `in`  | ✅ |
-|[Array Operations](https://jsonlogic.com/operations.html#array-operations)|
-|  `map`  | ✅ |
-|  `reduce`  | ✅ |
-|  `filter`  | ✅ |
-|  `all`  | ✅ |
-|  `none`  | ✅ |
-|  `some`  | ✅ |
-|  `merge`  | ✅ |
-|  `in`  | ✅ |
-|[String Operations](https://jsonlogic.com/operations.html#string-operations)|
-|  `in`  | ✅ |
-|  `cat`  | ✅ |
-|  `substr`  | ✅ |
-|Miscellaneous|
-|  `log` | 🚫 |
+If a feature is simple, lightweight, and universally needed — open an issue or discussion.
+
+
+| Operator | Supported | Source |
+|---|---:|---|
+| [Data / Presence](https://jsonlogic.com/operations.html#accessing-data) | | |
+| `var` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `val` | ✅ | ![jsonlogic community](https://img.shields.io/badge/jsonlogic--community-extra-0366d6?style=flat-square) |
+| `missing` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `missing_some` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `exists` | ✅ | ![jsonlogic community](https://img.shields.io/badge/jsonlogic--community-extra-0366d6?style=flat-square) |
+| [Logic and Boolean Operations](https://jsonlogic.com/operations.html#logic-and-boolean-operations) | | |
+| `if` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `?:` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `and` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `or` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `!` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `!!` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| [Comparison Operations](https://jsonlogic.com/operations.html#logic-and-boolean-operations) | | |
+| `==` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `===` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `!=` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `!==` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `>` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `>=` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `<` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `<=` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| [Numeric Operations](https://jsonlogic.com/operations.html#numeric-operations) | | |
+| `+` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `-` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `*` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `/` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `%` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `min` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `max` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| [Array Operations](https://jsonlogic.com/operations.html#array-operations) | | |
+| `map` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `reduce` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `filter` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `all` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `none` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `some` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `merge` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| [String Operations](https://jsonlogic.com/operations.html#string-operations) | | |
+| `in` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `cat` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| `substr` | ✅ | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+| [Community Extensions](https://github.com/json-logic/compat-tables/tree/main/suites) | | |
+| `??` | ✅ | ![jsonlogic community](https://img.shields.io/badge/jsonlogic--community-extra-0366d6?style=flat-square) |
+| `try` | ✅ | ![jsonlogic community](https://img.shields.io/badge/jsonlogic--community-extra-0366d6?style=flat-square) |
+| `throw` | ✅ | ![jsonlogic community](https://img.shields.io/badge/jsonlogic--community-extra-0366d6?style=flat-square) |
+| `preserve` | ✅ | ![jsonlogic community](https://img.shields.io/badge/jsonlogic--community-extra-0366d6?style=flat-square) |
+| Docs-only / Not implemented | | |
+| `log` | 🚫 | ![jsonlogic](https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square) |
+
+
+[src-core]: https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square
+[src-community]: https://img.shields.io/badge/jsonlogic--community-extra-0366d6?style=flat-square
 
 ## Adding Operations
 
@@ -316,41 +379,6 @@ using JsonLogic::Semantics
 
 !![]
 # => false
-```
-
-
-## Compliance and tests
-
-Optional: quick self-test
-
-
-
-```bash
-ruby test/selftest.rb
-```
-
-
-Official test suite
-
-1. Fetch the official suite
-
-
-
-```bash
-mkdir -p spec/tmp
-curl -fsSL https://jsonlogic.com/tests.json -o spec/tmp/tests.json
-```
-
-2. Run it
-
-```bash
-ruby script/compliance.rb spec/tmp/tests.json
-```
-
-  Expected output
-
-```bash
-# => Compliance: X/X passed
 ```
 
 ## Security

@@ -36,7 +36,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p tmp
-          ruby -Ilib script/compliance.rb compliance_v1 \
+          ruby -Ilib script/compliance.rb -v 1 \
             2>&1 | tee tmp/compliance-v1-${{ matrix.ruby }}.log
 
       - uses: actions/upload-artifact@v4
@@ -69,7 +69,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p tmp
-          ruby -Ilib script/compliance.rb compliance_v2 \
+          ruby -Ilib script/compliance.rb -v 2 \
             2>&1 | tee tmp/compliance-v2-${{ matrix.ruby }}.log
 
       - uses: actions/upload-artifact@v4

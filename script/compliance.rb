@@ -13,12 +13,16 @@ SUITES = {
 def usage!
   puts <<~USAGE
     Usage:
-      ruby script/compliance.rb [compliance_v1|compliance_v2|all|PATH]
+      ruby script/compliance.rb -v [1|2]
+      ruby script/compliance.rb -f PATH
+      ruby script/compliance.rb [compliance_v1|compliance_v2|PATH]
 
     Examples:
+      ruby script/compliance.rb -v 1
+      ruby script/compliance.rb -v 2
+      ruby script/compliance.rb -f spec/tmp/v2/tests.json
       ruby script/compliance.rb compliance_v1
       ruby script/compliance.rb compliance_v2
-      ruby script/compliance.rb all
       ruby script/compliance.rb spec/tmp/v2/tests.json
   USAGE
   exit 1
@@ -125,14 +129,34 @@ def run_suite(label, path)
   { label: label, passed: passed, total: total, failed: failed }
 end
 
-arg = ARGV[0]
-usage! if %w[-h --help].include?(arg)
+def parse_targets(argv)
+  return ["compliance_v2"] if argv.empty?
 
-targets = case arg
-          when nil then ["compliance_v2"]
-          when "all" then ["compliance_v1", "compliance_v2"]
-          else [arg]
-          end
+  arg = argv[0]
+  usage! if %w[-h --help].include?(arg)
+  usage! if arg == "all"
+
+  if %w[-v --suite].include?(arg)
+    usage! unless argv.size == 2
+    suite = argv[1]
+    usage! unless %w[1 2].include?(suite)
+    return ["compliance_v#{suite}"]
+  end
+
+  if %w[-f --file].include?(arg)
+    usage! unless argv.size == 2
+    return [argv[1]]
+  end
+
+  if (match = arg.match(/\A-v([12])\z/))
+    usage! unless argv.size == 1
+    return ["compliance_v#{match[1]}"]
+  end
+
+  [arg]
+end
+
+targets = parse_targets(ARGV)
 
 results = targets.map do |target|
   path = SUITES[target] || target
