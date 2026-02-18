@@ -11,14 +11,22 @@ class JsonLogic::Operations::StrictEqual < JsonLogic::LazyOperation
     prev = JsonLogic.apply(args.first, data)
     args[1..].each do |arg|
       current = JsonLogic.apply(arg, data)
-      if prev.is_a?(Numeric) && current.is_a?(Numeric)
-        return false unless prev.to_f == current.to_f
-      else
-        return false unless prev.class == current.class && prev == current
-      end
+      return false unless strict_equal_value?(prev, current)
 
       prev = current
     end
     true
+  end
+
+  private
+
+  def strict_equal_value?(left, right)
+    if left.is_a?(Numeric) && right.is_a?(Numeric)
+      left.to_f == right.to_f
+    elsif left.is_a?(Array) || left.is_a?(Hash)
+      left.equal?(right)
+    else
+      left.class == right.class && left.eql?(right)
+    end
   end
 end
