@@ -3,13 +3,10 @@ All notable changes to this project will be documented in this file.
 
 
 ## [0.2.0] - 2026-02-17
-- Alignment with the v2 community-extra compliance, extending behavior beyond the original core specification. This update adds support for the following operations:
-  - try
-  - throw
-  - exists
-  - val
-  - ?? (coalesce)
-- Introduced structured error classes to distinguish between invalid arguments, logical errors, and NaN-related cases, providing more concrete and consistent error reporting.
+- [feature] Add community-extra operators: `try`, `throw`, `exists`, `val`, `??` (`coalesce`).
+- [feature] Align behavior with community-extra compliance in addition to core JsonLogic coverage.
+- [feature] Introduce structured error classes for invalid arguments, logic errors, and NaN cases.
+- [fix] Preserve explicit `false` in `var` lookup. `var` no longer falls through to default and returns `nil` for falsey values (`<= 0.1.5`) ([#19](https://github.com/tavrelkate/json-logic-rb/issues/19)).
 
 ## [0.1.5] - 2025-12-08
 - [fix] Update Operations to support "each_cons" inside comparisons.
