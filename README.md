@@ -9,13 +9,12 @@
 
 
 
+
 # json-logic-rb
 
 Ruby implementation of [JsonLogic](https://jsonlogic.com/) — elegant and extensible. Full compliance with both core and community-extended specifications.
 
-[![jsonlogic core][src-core]](https://jsonlogic.com/tests.json) [![jsonlogic community][src-community]](https://github.com/json-logic/compat-tables/tree/main/suites) <a href="https://rubygems.org/gems/json-logic-rb"><img alt="rubygems" src="https://img.shields.io/gem/v/json-logic-rb"></a> <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-informational"></a>
-
-[![core ci](https://img.shields.io/github/actions/workflow/status/tavrelkate/json-logic-rb/compliance.yml?branch=main&label=core%20ci)](https://github.com/tavrelkate/json-logic-rb/actions/workflows/compliance.yml?query=branch%3Amain) [![extra ci](https://img.shields.io/github/actions/workflow/status/tavrelkate/json-logic-rb/compliance.yml?branch=main&label=extra%20ci)](https://github.com/tavrelkate/json-logic-rb/actions/workflows/compliance.yml?query=branch%3Amain)
+[![jsonlogic core][src-core]](https://jsonlogic.com/tests.json) [![jsonlogic community][src-community]](https://github.com/json-logic/compat-tables/tree/main/suites) [![compliance 100%](https://img.shields.io/badge/compliance-100%25-brightgreen)](https://github.com/tavrelkate/json-logic-rb/actions/workflows/compliance.yml?query=branch%3Amain) <a href="https://rubygems.org/gems/json-logic-rb"><img alt="rubygems" src="https://img.shields.io/gem/v/json-logic-rb"></a> <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-informational"></a>
 
 ## Table of Contents
 - [What](#what)
@@ -87,7 +86,7 @@ JsonLogic.apply(rule, data)
 
 ## How
 
-There are two types of operations: [Default Operations](#1-default-operations)  and [Lazy Operations](#2-lazy-operations)
+There are two types of operations: [Default Operations](#1-default-operations)  and [Lazy Operations](#2-lazy-operations).
 
 ### 1. Default Operations
 
@@ -141,7 +140,7 @@ JsonLogic.apply({ "or" => [1, { "/" => [1, 0] }] })
 
 ## Compliance and tests
 
-The JsonLogic specification provides two things: the operations themselves (their names and descriptions) and the test suites — concrete inputs with expected outputs that validate the implementation. The specification come in two variants:
+The JsonLogic specification provides  test suites — concrete inputs with expected outputs that validate the implementation of operations. The specification come in two variants:
 - [![jsonlogic core][src-core]](https://jsonlogic.com/tests.json)  — [original JsonLogic website](https://jsonlogic.com/tests.json);
 - [![jsonlogic community][src-community]](https://github.com/json-logic/compat-tables/tree/main/suites) — [extensions built on top of the core](https://github.com/json-logic/compat-tables/tree/main/suites);
 
