@@ -14,9 +14,9 @@ Gem::Specification.new do |s|
   s.license               = "MIT"
   s.required_ruby_version = ">= 3.0"
 
-  s.homepage              = "https://github.com/tavrelkate/json-logic-rb"
+  s.homepage              = "https://jsonlogic.com"
   s.metadata = {
-    "homepage_uri"      => "https://github.com/tavrelkate/json-logic-rb",
+    "homepage_uri"      => "https://jsonlogic.com",
     "source_code_uri"   => "https://github.com/tavrelkate/json-logic-rb",
     "documentation_uri" => "https://github.com/tavrelkate/json-logic-rb",
     "changelog_uri"     => "https://github.com/tavrelkate/json-logic-rb/blob/main/CHANGELOG.md"
