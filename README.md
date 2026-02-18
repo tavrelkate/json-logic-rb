@@ -13,15 +13,15 @@ Ruby implementation of [JsonLogic](https://jsonlogic.com/) — elegant and exten
 - [Quick start](#quick-start)
 - [Complience](#complience)
 - [Supported Operations (Built-in)](#supported-operations-built-in)
-- [Laziness](#laziness)
-  - [1. Default Operations](#1-default-operations)
-  - [2. Lazy Operations](#2-lazy-operations)
-  - [Why laziness matters?](#why-laziness-matters)
 - [Adding Operations](#adding-operations)
   - [Enable JsonLogic Semantics (optional)](#enable-jsonlogic-semantics-optional)
   - [Parameters](#parameters)
   - [Proc / Lambda](#proc--lambda)
   - [Class](#class)
+- [Laziness](#laziness)
+  - [1. Default Operations](#1-default-operations)
+  - [2. Lazy Operations](#2-lazy-operations)
+  - [Why laziness matters?](#why-laziness-matters)
 - [JsonLogic Semantic](#jsonlogic-semantic)
   - [Comparisons](#comparisons)
   - [Truthiness](#truthiness)
@@ -149,58 +149,6 @@ The JsonLogic specification provides test suites — concrete inputs with expect
 [src-community]: https://img.shields.io/badge/jsonlogic--community-extra-0366d6?style=flat-square
 
 
-## Laziness
-
-There are two types of operations: [Default Operations](#1-default-operations)  and [Lazy Operations](#2-lazy-operations).
-
-### 1. Default Operations
-
-For **Default Operations**, the it evaluates all arguments first and then calls the operator with the resulting Ruby values.
-This matches the reference behavior for arithmetic, comparisons, string operations, and other pure operations that do not control evaluation order.
-
-**Groups and references:**
-
-- [Numeric operations](https://jsonlogic.com/operations.html#numeric-operations)
-- [String operations](https://jsonlogic.com/operations.html#string-operations)
-- [Array operations](https://jsonlogic.com/operations.html#array-operations) — simple transform like `merge`.
-
-### 2. Lazy Operations
-
-Some operations must control whether and when their arguments are evaluated. They implement branching, short-circuiting, or “apply a rule per item” semantics. For these **Lazy Operations**, the engine passes raw sub-rules and data. The operator then evaluates only the sub-rules it actually needs.
-
-**Groups and references:**
-
-- [Logic and Boolean Operations](https://jsonlogic.com/operations.html#logic-and-boolean-operations) — short-circuit/branching like `or`.
-- [Comparison operations](https://jsonlogic.com/operations.html#logic-and-boolean-operations) — equality/ordering like `==`.
-- [Array operations](https://jsonlogic.com/operations.html#array-operations) — enumerable evaluation like `map`.
-
-
-**Example #1**
-
-```ruby
-# filter: keep numbers >= 2
-JsonLogic.apply(
-  { "filter" => [ { "var" => "ints" }, { ">=" => [ { "var" => "" }, 2 ] } ] },
-  { "ints" => [1,2,3] }
-)
-# => [2, 3]
-```
-
-### Why laziness matters?
-
-Lazy operations prevent evaluation of branches you do not need.
-
-If hypothetically division by zero raises an error, lazy control would avoid it.
-```ruby
-JsonLogic.apply({ "or" => [1, { "/" => [1, 0] }] })
-# => 1
-```
-
-> In this gem division returns nil on divide‑by‑zero, but this example show why lazy evaluation is required by the spec: branching and boolean operators must not evaluate unused branches.
-
-
-
-
 ## Adding Operations
 
 Don’t expect JsonLogic to include every specialized operation. It’s intentionally small and not a programming language. It will never do everything.
@@ -291,6 +239,59 @@ JsonLogic.apply({ "starts_with" => [ { "var" => "email" }, "admin@" ] })
 
 
 
+
+## Laziness
+
+There are two types of operations: [Default Operations](#1-default-operations)  and [Lazy Operations](#2-lazy-operations).
+
+### 1. Default Operations
+
+For **Default Operations**, the it evaluates all arguments first and then calls the operator with the resulting Ruby values.
+This matches the reference behavior for arithmetic, comparisons, string operations, and other pure operations that do not control evaluation order.
+
+**Groups and references:**
+
+- [Numeric operations](https://jsonlogic.com/operations.html#numeric-operations)
+- [String operations](https://jsonlogic.com/operations.html#string-operations)
+- [Array operations](https://jsonlogic.com/operations.html#array-operations) — simple transform like `merge`.
+
+### 2. Lazy Operations
+
+Some operations must control whether and when their arguments are evaluated. They implement branching, short-circuiting, or “apply a rule per item” semantics. For these **Lazy Operations**, the engine passes raw sub-rules and data. The operator then evaluates only the sub-rules it actually needs.
+
+**Groups and references:**
+
+- [Logic and Boolean Operations](https://jsonlogic.com/operations.html#logic-and-boolean-operations) — short-circuit/branching like `or`.
+- [Comparison operations](https://jsonlogic.com/operations.html#logic-and-boolean-operations) — equality/ordering like `==`.
+- [Array operations](https://jsonlogic.com/operations.html#array-operations) — enumerable evaluation like `map`.
+
+
+**Example #1**
+
+```ruby
+# filter: keep numbers >= 2
+JsonLogic.apply(
+  { "filter" => [ { "var" => "ints" }, { ">=" => [ { "var" => "" }, 2 ] } ] },
+  { "ints" => [1,2,3] }
+)
+# => [2, 3]
+```
+
+### Why laziness matters?
+
+Lazy operations prevent evaluation of branches you do not need.
+
+If hypothetically division by zero raises an error, lazy control would avoid it.
+```ruby
+JsonLogic.apply({ "or" => [1, { "/" => [1, 0] }] })
+# => 1
+```
+
+> In this gem division returns nil on divide‑by‑zero, but this example show why lazy evaluation is required by the spec: branching and boolean operators must not evaluate unused branches.
+
+
+
+
 ## JsonLogic Semantic
 
 All supported Operations follow JsonLogic semantics.
@@ -353,7 +354,7 @@ using JsonLogic::Semantics
 
 MIT — see [LICENSE](LICENSE).
 
-## Authors
+## Maintainers
 
 - [Valeriya Petrova](https://github.com/piatrova-valeriya1999)
 - [Tavrel Kate](https://github.com/tavrelkate)
