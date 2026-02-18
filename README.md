@@ -1,15 +1,4 @@
 
-
-
-
-
-
-
-
-
-
-
-
 # json-logic-rb
 
 Ruby implementation of [JsonLogic](https://jsonlogic.com/) — elegant and extensible. Full compliance with both core and community-extended specifications.
@@ -141,8 +130,11 @@ JsonLogic.apply({ "or" => [1, { "/" => [1, 0] }] })
 ## Compliance and tests
 
 The JsonLogic specification provides  test suites — concrete inputs with expected outputs that validate the implementation of operations. The specification come in two variants:
-- [![jsonlogic core][src-core]](https://jsonlogic.com/tests.json)  — [original JsonLogic website](https://jsonlogic.com/tests.json);
-- [![jsonlogic community][src-community]](https://github.com/json-logic/compat-tables/tree/main/suites) — [extensions built on top of the core](https://github.com/json-logic/compat-tables/tree/main/suites);
+- [![jsonlogic core][src-core]](https://jsonlogic.com/tests.json)
+ [original JsonLogic website](https://jsonlogic.com/tests.json);
+ 
+- [![jsonlogic community][src-community]](https://github.com/json-logic/compat-tables/tree/main/suites)
+ [extensions built on top of the core](https://github.com/json-logic/compat-tables/tree/main/suites);
 
  The "extra"  exists because "core" hasn't changed in years — and that’s fine, "core"  is a solid, finished foundation. Think of it as v1, while "extra" is the v2+ evolution as there are no visible plans to change the original.
 
@@ -183,7 +175,7 @@ Don’t expect JsonLogic to include every specialized operation. It’s intentio
 
 You can add custom operations yourself — check out  [§Adding Operations](https://www.google.com/search?q=%23adding-operations)— or consider if the logic can be expressed with what’s already there.
 
-If a feature is simple, lightweight, and universally needed — open an issue or discussion.
+If a feature is simple, lightweight, and universally needed — [open an issue or discussion.](https://github.com/json-logic)
 
 
 | Operator | Supported | Source |
