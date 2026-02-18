@@ -1,30 +1,22 @@
 # frozen_string_literal: true
 
+using JsonLogic::Semantics
+
 class JsonLogic::Operations::Substr < JsonLogic::Operation
   def self.name = "substr"
 
-  def call(values, _data)
-    s, i, len = values
-    str   = s.to_s
-    start = i.to_i
+  def call((string, index, length), _data)
+    value = string.to_s
+    start = index.to_i
+    start += value.length if start.negative?
+    start = start.clamp(0, value.length)
 
-    start += str.length if start < 0
-    start = 0 if start < 0
-    start = str.length if start > str.length
+    return value[start..] || "" if length.nil?
 
-    return (str[start..-1] || "") if len.nil?
+    size = length.to_i
+    return value.slice(start, size) || "" unless size.negative?
 
-    l = len.to_i
-    if l >= 0
-      slice = str[start, l]
-      slice.nil? ? "" : slice
-    else
-      end_excl = str.length + l
-      end_excl = start if end_excl < start
-      end_excl = str.length if end_excl > str.length
-      length = end_excl - start
-      length = 0 if length < 0
-      str[start, length] || ""
-    end
+    finish = (value.length + size).clamp(start, value.length)
+    value.slice(start...finish) || ""
   end
 end

@@ -2,6 +2,49 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.2.0] - 2026-02-17
+### Added
+- Add community-extra operators: `try`, `throw`, `exists`, `val`, and `??` (`coalesce`).
+- Add structured error classes to distinguish invalid arguments, logic errors, and NaN cases.
+
+### Changed
+- Align behavior with community-extra compliance while keeping core JsonLogic compatibility.
+- Standardize compliance runner usage with version flags.
+
+```bash
+ruby script/compliance.rb -v 1
+ruby script/compliance.rb -v 2
+```
+
+Expected:
+
+```text
+compliance_v1: 272/272 passed (100.00%)
+compliance_v2: 1138/1138 passed (100.00%)
+```
+
+### Fixed
+- Fix `var` lookup when the resolved value is explicitly `false` ([#19](https://github.com/tavrelkate/json-logic-rb/issues/19)).
+  Before (`<= 0.1.5`), `false` could fall through and return `nil`.
+
+```ruby
+rule = { "var" => "some_value" }
+data = { "some_value" => false }
+
+JsonLogic.apply(rule, data)
+# <= 0.1.5 => nil
+```
+
+  Now the resolved `false` value is preserved.
+
+```ruby
+rule = { "var" => "some_value" }
+data = { "some_value" => false }
+
+JsonLogic.apply(rule, data)
+# 0.2.0 => false
+```
+
 ## [0.1.5] - 2025-12-08
 - [fix] Update Operations to support "each_cons" inside comparisons.
 

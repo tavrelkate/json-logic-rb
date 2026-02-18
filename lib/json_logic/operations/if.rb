@@ -6,6 +6,8 @@ class JsonLogic::Operations::If < JsonLogic::LazyOperation
   def self.name = "if"
 
   def call(args, data)
+    raise JsonLogic::InvalidArgumentsError.new unless args.is_a?(Array)
+
     i = 0
     while i < args.size - 1
       return JsonLogic.apply(args[i + 1], data) if !!(JsonLogic.apply(args[i], data))

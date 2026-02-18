@@ -6,11 +6,12 @@ class JsonLogic::Operations::And < JsonLogic::LazyOperation
   def self.name = "and"
 
   def call(args, data)
-    last = nil
-    args.each do |a|
-      last = JsonLogic.apply(a, data)
-      return last unless !!last
+    raise JsonLogic::InvalidArgumentsError.new unless args.is_a?(Array)
+
+    args.reduce(false) do |_memo, rule|
+      value = JsonLogic.apply(rule, data)
+      break value unless value.to_bool
+      value
     end
-    last
   end
 end

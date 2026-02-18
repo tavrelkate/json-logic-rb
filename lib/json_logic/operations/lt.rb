@@ -2,11 +2,17 @@
 
 using JsonLogic::Semantics
 
-class JsonLogic::Operations::LT < JsonLogic::Operation
+class JsonLogic::Operations::LT < JsonLogic::LazyOperation
   def self.name = "<"
 
-  def call(values, _data)
-    return values[0] < values[1] if values.size == 2
-    values.each_cons(2).all? { |a,b| a < b }
+  def call(args, data)
+    raise JsonLogic::InvalidArgumentsError.new unless args.is_a?(Array) && args.size >= 2
+
+    args.drop(1).reduce(JsonLogic.apply(args.first, data)) do |previous, rule|
+      current = JsonLogic.apply(rule, data)
+      return false unless previous < current
+      current
+    end
+    true
   end
 end

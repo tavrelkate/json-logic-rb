@@ -5,12 +5,9 @@ using JsonLogic::Semantics
 class JsonLogic::Operations::All < JsonLogic::EnumerableOperation
   def self.name = "all"
 
-  def call(args, data)
-    items, rule_applied_to_each_item = resolve_items_and_per_item_rule(args, data)
-    return false if items.empty?
+  protected
 
-    items.all? do |item|
-      !!JsonLogic.apply(rule_applied_to_each_item, item)
-    end
+  def call_with_values(values)
+    !values.empty? && values.all? { |value| !!value }
   end
 end
