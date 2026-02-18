@@ -1,11 +1,8 @@
-
-
+[![jsonlogic core][src-core]](https://jsonlogic.com/tests.json) [![jsonlogic community][src-community]](https://github.com/json-logic/compat-tables/tree/main/suites) [![compliance 100%](https://img.shields.io/badge/compliance-100%25-brightgreen)](https://github.com/tavrelkate/json-logic-rb/actions/workflows/compliance.yml?query=branch%3Amain) <a href="https://rubygems.org/gems/json-logic-rb"><img alt="rubygems" src="https://img.shields.io/gem/v/json-logic-rb"></a> <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-informational"></a>
 
 # json-logic-rb
 
-Ruby implementation of [JsonLogic](https://jsonlogic.com/) — elegant and extensible. Full compliance with both core and community-extended specifications.
-
-[![jsonlogic core][src-core]](https://jsonlogic.com/tests.json) [![jsonlogic community][src-community]](https://github.com/json-logic/compat-tables/tree/main/suites) [![compliance 100%](https://img.shields.io/badge/compliance-100%25-brightgreen)](https://github.com/tavrelkate/json-logic-rb/actions/workflows/compliance.yml?query=branch%3Amain) <a href="https://rubygems.org/gems/json-logic-rb"><img alt="rubygems" src="https://img.shields.io/gem/v/json-logic-rb"></a> <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-informational"></a>
+Ruby implementation of [JsonLogic](https://jsonlogic.com/). Pure and extensible. Full compliance with both core and community-extended specifications.
 
 ## Table of Contents
 - [What](#what)

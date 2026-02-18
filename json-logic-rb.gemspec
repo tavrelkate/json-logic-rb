@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.name                  = "json-logic-rb"
   s.version                = JsonLogic::VERSION
 
-  s.summary               = "Ruby implementation of JsonLogic — elegant and extensible."
+  s.summary               = "Ruby implementation of JsonLogic. Pure and extensible. Full compliance."
   s.description           = "Ruby implementation of JsonLogic. JsonLogic rules are JSON trees. The engine walks that tree and returns a Ruby value. Full compliance with both core and community-extended specifications."
 
   s.authors               = ["Tavrel Kate"]
