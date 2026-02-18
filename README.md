@@ -1,4 +1,4 @@
-[![jsonlogic core][src-core]](https://jsonlogic.com/tests.json) [![jsonlogic community][src-community]](https://github.com/json-logic/compat-tables/tree/main/suites) [![compliance 100%](https://img.shields.io/badge/compliance-100%25-brightgreen)](https://github.com/tavrelkate/json-logic-rb/actions/workflows/compliance.yml?query=branch%3Amain) <a href="https://rubygems.org/gems/json-logic-rb"><img alt="rubygems" src="https://img.shields.io/gem/v/json-logic-rb"></a> <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-informational"></a>
+[![jsonlogic core][src-core]][core-tests] [![jsonlogic community][src-community]][community-suites] [![compliance 100%][badge-compliance]][ci-main] [![Build Status][badge-buildkite]][ci-main] [![rubygems][badge-rubygems]][rubygems] [![license][badge-license]][license]
 
 # json-logic-rb
 
@@ -8,12 +8,12 @@ Ruby implementation of [JsonLogic](https://jsonlogic.com/). Pure and extensible.
 - [What](#what)
 - [Install](#install)
 - [Quick start](#quick-start)
-- [Complience](#complience)
+- [Compliance](#compliance)
 - [Supported Operations (Built-in)](#supported-operations-built-in)
 - [Adding Operations](#adding-operations)
   - [Enable JsonLogic Semantics (optional)](#enable-jsonlogic-semantics-optional)
   - [Parameters](#parameters)
-  - [Proc / Lambda](#proc--lambda)
+  - [Proc and Lambda](#proc-and-lambda)
   - [Class](#class)
 - [Laziness](#laziness)
   - [1. Default Operations](#1-default-operations)
@@ -24,7 +24,7 @@ Ruby implementation of [JsonLogic](https://jsonlogic.com/). Pure and extensible.
   - [Truthiness](#truthiness)
 - [Security](#security)
 - [License](#license)
-- [Authors](#authors)
+- [Maintainers](#maintainers)
 
 ---
 
@@ -75,11 +75,11 @@ JsonLogic.apply(rule, data)
 
 
 
-## Complience
+## Compliance
 
 The JsonLogic specification provides test suites — concrete inputs with expected outputs that validate the implementation of operations. The specification comes in two variants:
-- [![jsonlogic core][src-core]](https://jsonlogic.com/tests.json) – [original JsonLogic website](https://jsonlogic.com/tests.json)
-- [![jsonlogic community][src-community]](https://github.com/json-logic/compat-tables/tree/main/suites) – [extensions built on top of the core](https://github.com/json-logic/compat-tables/tree/main/suites)
+- [![jsonlogic core][src-core]](https://jsonlogic.com) – [original JsonLogic website](https://jsonlogic.com/tests.json)
+- [![jsonlogic community][src-community]](https://github.com/json-logic) – [extensions built on top of the core](https://github.com/json-logic/compat-tables/tree/main/suites)
 
  The "extra"  exists because "core" hasn't changed in years — and that’s fine, "core"  is a solid, finished foundation. Think of it as v1, while "extra" is the v2+ evolution as there are no visible plans to change the original.
 
@@ -144,13 +144,22 @@ The JsonLogic specification provides test suites — concrete inputs with expect
 
 [src-core]: https://img.shields.io/badge/jsonlogic-core-2ea44f?style=flat-square
 [src-community]: https://img.shields.io/badge/jsonlogic--community-extra-0366d6?style=flat-square
+[badge-compliance]: https://img.shields.io/badge/compliance-100%25-brightgreen
+[badge-buildkite]: https://img.shields.io/github/actions/workflow/status/tavrelkate/json-logic-rb/compliance.yml?branch=main&label=build
+[badge-rubygems]: https://img.shields.io/gem/v/json-logic-rb
+[badge-license]: https://img.shields.io/badge/license-MIT-informational
+[core-tests]: https://jsonlogic.com
+[community-suites]: https://github.com/json-logic
+[ci-main]: https://github.com/tavrelkate/json-logic-rb/actions/workflows/compliance.yml?query=branch%3Amain
+[rubygems]: https://rubygems.org/gems/json-logic-rb
+[license]: LICENSE
 
 
 ## Adding Operations
 
 Don’t expect JsonLogic to include every specialized operation. It’s intentionally small and not a programming language. It will never do everything.
 
-Before you reach for a custom solution, see if you can express your logic using the  [§Supported Operations (Built‑in)](https://www.google.com/search?q=%23supported-operations-built-in). Often, a simple change in perspective is all you need to get the job done with what's already there.
+Before you reach for a custom solution, see if you can express your logic using the [§Supported Operations (Built-in)](#supported-operations-built-in). Often, a simple change in perspective is all you need to get the job done with what's already there.
 
 If that doesn't cut it, adding a custom operation is straightforward.  Keep it simple: start with a Proc or a Lambda.  If needed – promote it to a Class.
 
@@ -172,7 +181,7 @@ Operator function use a consistent call shape:
 ->((string, prefix), data) { string.to_s.start_with?(prefix.to_s) }
 ```
 
-### Proc / Lambda
+### Proc and Lambda
 
 Pick the Operation type.
 

@@ -29,7 +29,7 @@ Auto‑registration works for classes under [lib/json_logic/operations/](./lib/j
 ## PR checklist
 
 - [ ] Tests or examples included (when applicable).
-- [ ] Compliance suite passes (see **[§ Compliance and tests](./README.md#compliance-and-tests)**).
+- [ ] Compliance suite passes (see **[§ Compliance](./README.md#compliance)**).
 - [ ] **[README](./README.md)** updated if user‑facing behavior changed.
 - [ ] Version bumped in [Gem Version File](./lib/json_logic/version.rb).
 - [ ] **[CHANGELOG](./CHANGELOG.md)** updated.
