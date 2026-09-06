@@ -2,6 +2,38 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.3.0] - 2026-09-06
+### Fixed
+- Fix `Array.wrap` monkeypatch ([#21](https://github.com/tavrelkate/json-logic-rb/issues/21)).
+  Before, requiring this gem defined `Array.wrap` globally on the core `Array` class. 
+  Had conflict with ActiveSupport's with different `nil` handling (`[]` vs `[nil]`). Whichever loaded last silently won.
+
+```ruby
+require "json-logic-rb"
+
+Array.respond_to?(:wrap)
+# <= 0.2.0 => true
+```
+
+  Now the gem no longer touches `Array` globally. JsonLogic still wrap a single raw value into a array without dropping any elements (specially `nil`), but that rule now lives inside internal `JsonLogic::Semantics` instead of on core `Array`.
+
+```ruby
+require "json-logic-rb"
+
+Array.respond_to?(:wrap)
+# 0.3.0 => false
+```
+
+  ActiveSupport's own `Array.wrap` is no longer shadowed:
+
+```ruby
+require "active_support/core_ext/array/wrap"
+require "json-logic-rb"
+
+Array.wrap(nil)
+# 0.3.0 => [] (ActiveSupport's behavior)
+```
+
 ## [0.2.0] - 2026-02-17
 ### Added
 - Add community-extra operators: `try`, `throw`, `exists`, `val`, and `??` (`coalesce`).

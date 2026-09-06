@@ -6,7 +6,7 @@ class JsonLogic::Operations::Try < JsonLogic::LazyOperation
   def self.name = "try"
 
   def call(arguments, data)
-    arguments = Array.wrap(arguments)
+    arguments = arguments.as_array
     raise JsonLogic::InvalidArgumentsError.new if arguments.empty?
 
     state = { data: data, error: nil }

@@ -10,5 +10,5 @@ class JsonLogic::Operations::Exists < JsonLogic::Operation
 
   private
 
-  def normalize_path(args, data) = args.is_a?(Array) ? Array.wrap(args).map { |part| JsonLogic.apply(part, data) } : JsonLogic.apply(args, data)
+  def normalize_path(args, data) = args.is_a?(Array) ? args.as_array.map { |part| JsonLogic.apply(part, data) } : JsonLogic.apply(args, data)
 end

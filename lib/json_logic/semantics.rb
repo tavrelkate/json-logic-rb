@@ -84,6 +84,12 @@ module JsonLogic
       def to_bool
         JsonLogic::Semantics.truthy?(self)
       end
+
+      def as_array = [self]
+    end
+
+    refine Array do
+      def as_array = self
     end
 
     [String, Integer, Float, NilClass, Array, TrueClass, FalseClass].each do |klass|

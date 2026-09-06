@@ -7,7 +7,7 @@ class JsonLogic::Operations::MissingSome < JsonLogic::Operation
 
   def call((min_ok, list), data)
     json = JsonLogic::Tree.new(data)
-    keys = Array.wrap(list)
+    keys = list.as_array
     missing = keys.select { |key| json.dig(key).nil? }
     (keys.size - missing.size) >= min_ok ? [] : missing
   end
