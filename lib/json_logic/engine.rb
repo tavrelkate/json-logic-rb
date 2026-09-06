@@ -33,7 +33,12 @@ module JsonLogic
           return rule.transform_values { |value| evaluate(value, data) }
         end
 
-        args = op_class.values_only? ? Array.wrap(evaluate(raw_args, data)) : raw_args
+        if op_class.values_only?
+          evaluated = evaluate(raw_args, data)
+          args = evaluated.is_a?(Array) ? evaluated : [evaluated]
+        else
+          args = raw_args
+        end
         begin
           result = op_class.new.call(args, data)
           raise JsonLogic::NaNError.new if result.is_a?(Float) && (result.nan? || result.infinite?)
