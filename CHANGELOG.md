@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
   Had conflict with ActiveSupport's with different `nil` handling (`[]` vs `[nil]`). Whichever loaded last silently won.
 
 ```ruby
-require "json-logic-rb"
+require 'json_logic'
 
 Array.respond_to?(:wrap)
 # <= 0.2.0 => true
@@ -18,7 +18,7 @@ Array.respond_to?(:wrap)
   Now the gem no longer touches `Array` globally. JsonLogic still wrap a single raw value into a array without dropping any elements (specially `nil`), but that rule now lives inside internal `JsonLogic::Semantics` instead of on core `Array`.
 
 ```ruby
-require "json-logic-rb"
+require 'json_logic'
 
 Array.respond_to?(:wrap)
 # 0.3.0 => false
@@ -28,7 +28,7 @@ Array.respond_to?(:wrap)
 
 ```ruby
 require "active_support/core_ext/array/wrap"
-require "json-logic-rb"
+require 'json_logic'
 
 Array.wrap(nil)
 # 0.3.0 => [] (ActiveSupport's behavior)
