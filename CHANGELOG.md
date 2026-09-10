@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.3.1] - 2026-09-10
+### Fixed
+- Fix release `0.3.0` with an untracked file never committed to the repository ([#24](https://github.com/tavrelkate/json-logic-rb/issues/24)).
+
 ## [0.3.0] - 2026-09-06
 ### Fixed
 - Fix `Array.wrap` monkeypatch ([#21](https://github.com/tavrelkate/json-logic-rb/issues/21)).
