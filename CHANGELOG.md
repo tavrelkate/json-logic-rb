@@ -17,14 +17,14 @@ All notable changes to this project will be documented in this file.
 
   ```ruby
   JsonLogic.apply({"unknown_operation" => [1, 2]})
-  # 0.4.0 => raises JsonLogic::UnrecognizedOperationError: Unrecognized Operation: "unknown_operation"
+  # 0.4.0 => raises JsonLogic::UnrecognizedOperationError: Unrecognized Operation
   ```
   
     Also applies however deeply the operator is nested inside the rule:
   
   ```ruby
   JsonLogic.apply({"if" => [true, {"+" => [1, {"unknown_operation" => 2}]}, 0]})
-  # 0.4.0 => raises JsonLogic::UnrecognizedOperationError: Unrecognized Operation: "unknown_operation"
+  # 0.4.0 => raises JsonLogic::UnrecognizedOperationError: Unrecognized Operation
   ```
 
 ## [0.3.1] - 2026-09-10

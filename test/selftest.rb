@@ -14,16 +14,16 @@ t('map inc') do
   JsonLogic.apply({ 'map' => [{ 'var' => 'xs' }, { "+": [{ "var": '' }, 1] }] }, { 'xs' => [1, 2, 3] }) == [2, 3, 4]
 end
 
-t('unrecognized operation raises with its name') do
+t('unrecognized operation raises') do
   JsonLogic.apply({ 'unknown_operation' => [1, 2] })
   false
 rescue JsonLogic::UnrecognizedOperationError => e
-  e.message == 'Unrecognized Operation: "unknown_operation"'
+  e.message == 'Unrecognized Operation'
 end
 
 t('unrecognized operation nested inside a lazy op still raises') do
   JsonLogic.apply({ 'if' => [true, { 'nested_unknown_operation' => 1 }, 2] })
   false
 rescue JsonLogic::UnrecognizedOperationError => e
-  e.message == 'Unrecognized Operation: "nested_unknown_operation"'
+  e.message == 'Unrecognized Operation'
 end

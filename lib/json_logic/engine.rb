@@ -29,7 +29,7 @@ module JsonLogic
 
         name, raw_args = rule.first
         op_class = @registry.fetch(name)
-        raise JsonLogic::UnrecognizedOperationError.new("Unrecognized Operation: #{name.inspect}") unless op_class
+        raise JsonLogic::UnrecognizedOperationError.new unless op_class
 
         if op_class.values_only?
           evaluated = evaluate(raw_args, data)
