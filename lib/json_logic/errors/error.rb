@@ -19,7 +19,7 @@ module JsonLogic
     private
 
     def message_or_default(message)
-      self.class < JsonLogic::Error || message.empty? ? default_message : message.to_s
+      self.class < JsonLogic::Error && (message.nil? || message.to_s.empty?) ? default_message : message.to_s
     end
 
     def default_message
