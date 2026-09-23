@@ -23,6 +23,13 @@ end
 # Load operation classes (each file defines one class with .name)
 Dir[File.join(__dir__, 'json_logic', 'operations', '*.rb')].sort.each { |f| require f }
 
+# `Not`/`BoolCast` read their single evaluated argument as a plain
+# operator (`!a`/`!!a`) with no wrap() call of their own -- their
+# argument is wrapped for them here, from the outside, before `call` runs.
+[JsonLogic::Operations::Not, JsonLogic::Operations::BoolCast].each do |op_class|
+  op_class.prepend(JsonLogic::Semantics::WrapArgs)
+end
+
 # Auto-register all operation classes with .name
 module JsonLogic
   module Loader
