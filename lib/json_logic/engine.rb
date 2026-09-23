@@ -40,7 +40,7 @@ module JsonLogic
           args = raw_args
         end
         begin
-          result = op_class.new.call(args, data)
+          result = Semantics::Value.unwrap(op_class.new.call(args, data))
           raise JsonLogic::NaNError.new if result.is_a?(Float) && (result.nan? || result.infinite?)
           result
         rescue JsonLogic::Error

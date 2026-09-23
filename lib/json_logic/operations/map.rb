@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-using JsonLogic::Semantics
-
 class JsonLogic::Operations::Map < JsonLogic::EnumerableOperation
   def self.name = "map"
 
