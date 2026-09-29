@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-using JsonLogic::Semantics
-
 class JsonLogic::Operations::Reduce < JsonLogic::EnumerableOperation
   def self.name = "reduce"
 

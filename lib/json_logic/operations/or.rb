@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-using JsonLogic::Semantics
+using JsonLogic::Semantics::AutoWrap
 
 class JsonLogic::Operations::Or < JsonLogic::LazyOperation
   def self.name = "or"

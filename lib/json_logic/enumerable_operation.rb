@@ -25,7 +25,7 @@ class JsonLogic::EnumerableOperation < JsonLogic::LazyOperation
     return [] if rule.nil?
 
     items.each_with_index.map do |item, index|
-      JsonLogic.apply(rule, JsonLogic::Scope.new(item, data, index))
+      JsonLogic::Semantics::Value.new(JsonLogic.apply(rule, JsonLogic::Scope.new(item, data, index)))
     end
   end
 end

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-using JsonLogic::Semantics
-
 class JsonLogic::Operations::Var < JsonLogic::Operation
   def self.name = "var"
   def self.values_only? = false
