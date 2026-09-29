@@ -19,6 +19,7 @@ module JsonLogic
     private
 
     def message_or_default(message)
+      # message is always a real String here today; add a nil-guard if that changes.
       self.class < JsonLogic::Error || message.empty? ? default_message : message.to_s
     end
 

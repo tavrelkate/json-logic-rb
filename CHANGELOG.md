@@ -2,6 +2,31 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.4.0] - 2026-09-15
+### Changed
+- Using an unsupported operator in a rule now raises `JsonLogic::UnrecognizedOperationError`.
+
+  Before:
+
+  ```ruby
+  JsonLogic.apply({"unknown_operation" => [1, 2]})
+  # 0.3.1 => {"unknown_operation" => [1, 2]}
+  ```
+
+  Now:
+
+  ```ruby
+  JsonLogic.apply({"unknown_operation" => [1, 2]})
+  # 0.4.0 => raises JsonLogic::UnrecognizedOperationError: Unrecognized Operation
+  ```
+  
+    Also applies however deeply the operator is nested inside the rule:
+  
+  ```ruby
+  JsonLogic.apply({"if" => [true, {"+" => [1, {"unknown_operation" => 2}]}, 0]})
+  # 0.4.0 => raises JsonLogic::UnrecognizedOperationError: Unrecognized Operation
+  ```
+
 ## [0.3.1] - 2026-09-10
 ### Fixed
 - Fix release `0.3.0` with an untracked file never committed to the repository ([#24](https://github.com/tavrelkate/json-logic-rb/issues/24)).
