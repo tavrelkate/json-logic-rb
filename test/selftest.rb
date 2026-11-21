@@ -14,6 +14,10 @@ t('map inc') do
   JsonLogic.apply({ 'map' => [{ 'var' => 'xs' }, { "+": [{ "var": '' }, 1] }] }, { 'xs' => [1, 2, 3] }) == [2, 3, 4]
 end
 
+t('cat prints whole numbers from arithmetic without .0') do
+  JsonLogic.apply({ 'cat' => ['Total: ', { '+' => [1, 2] }, ', avg ', { '/' => [5, 2] }] }) == 'Total: 3, avg 2.5'
+end
+
 t('unrecognized operation raises') do
   JsonLogic.apply({ 'unknown_operation' => [1, 2] })
   false

@@ -2,6 +2,10 @@
 All changes are documented in this file.
 
 
+## [Unreleased]
+### Fixed
+- `cat` prints whole numbers from arithmetic without `.0`: `{"cat": ["Total: ", {"+": [1, 2]}]}` now gives `"Total: 3"` instead of `"Total: 3.0"`.
+
 ## [0.4.0] - 2026-09-29
 ### Changed
 - Using an unsupported operation in a rule now raises `JsonLogic::UnrecognizedOperationError`.
